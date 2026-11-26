@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Võ Hoài Nam | License Key & CTV Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js cho nền 3D interactive wireframe & particle -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --bg-obsidian: #06080f;
+            --bg-navy: #0b1020;
+            --accent-cyan: #00f2fe;
+            --accent-indigo: #4f46e5;
+            --accent-violet: #8b5cf6;
+            --accent-gold: #fbbf24;
+        }
+
+        body {
+            background-color: var(--bg-obsidian);
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.55;
+        }
+
+        .glass-panel {
+            background: rgba(11, 16, 32, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 254, 0.14);
+            box-shadow: 0 16px 40px -18px rgba(0, 242, 254, 0.22), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(0, 242, 254, 0.28);
+        }
+
+        .tier-card {
+            background: rgba(6, 10, 22, 0.94);
+            border: 1px solid rgba(139, 92, 246, 0.22);
+            transition: all 0.18s ease;
+        }
+
+        .tier-card:hover {
+            border-color: rgba(0, 242, 254, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -12px rgba(0, 242, 254, 0.45);
+        }
+
+        .tier-card.selected {
+            background: linear-gradient(155deg, rgba(16, 36, 68, 0.96), rgba(18, 16, 48, 0.96));
+            border: 1.5px solid #00f2fe;
+            box-shadow: 0 0 28px rgba(0, 242, 254, 0.28);
+            transform: translateY(-2px);
+        }
+
+        .tier-card.ctv-exclusive.selected {
+            background: linear-gradient(155deg, rgba(66, 38, 10, 0.96), rgba(24, 15, 38, 0.96));
+            border: 1.5px solid #fbbf24;
+            box-shadow: 0 0 28px rgba(251, 191, 36, 0.3);
+        }
+
+        .cyan-glow-text {
+            text-shadow: 0 0 18px rgba(0, 242, 254, 0.35);
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #06080f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f2fe;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyan-400 selection:text-slate-950">
+
+    <!-- Nền 3D interactive wireframe & particle -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Thông báo Toast -->
+    <div id="toast-container" class="fixed top-20 right-4 z-[95] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- ======================================================================
+         HEADER ĐIỀU HƯỚNG CHÍNH
+         ====================================================================== -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-cyan-400/15 rounded-none">
+        <div class="max-w-4xl mx-auto px-3 sm:px-5 h-16 flex items-center justify-between gap-2">
+            <!-- Chạm 5 lần hoặc nhấn Ctrl+Shift+A để mở Quản Trị -->
+            <button type="button" onclick="handleBrandTap()" class="flex items-center gap-2.5 text-left cursor-pointer select-none min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-indigo-500 to-violet-600 flex items-center justify-center text-slate-950 font-extrabold shadow-md shadow-cyan-400/25 shrink-0">
+                    <i class="fa-solid fa-key text-sm"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-extrabold text-sm sm:text-base text-white tracking-tight truncate cyan-glow-text">Võ Hoài Nam</span>
+                        <span id="header-role-badge" class="hidden px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-extrabold text-[10px] uppercase tracking-wider shrink-0">CTV</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-400 uppercase truncate">
+                        <span>License Key & CTV Portal</span>
+                        <span id="sync-status-pill" class="px-1.5 py-0.2 rounded bg-slate-800/90 text-cyan-300 font-mono text-[9px] normal-case">LocalStorage</span>
+                    </div>
+                </div>
+            </button>
+
+            <div id="header-right-controls" class="flex items-center gap-2 shrink-0">
+                <!-- Render động qua JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================================================================
+         NỘI DUNG CHÍNH
+         ====================================================================== -->
+    <main class="max-w-4xl mx-auto px-3 sm:px-5 pt-4 pb-24 space-y-4">
+
+        <!-- 4 THẺ CHỈ SỐ TÀI KHOẢN -->
+        <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="glass-panel rounded-2xl p-4">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Số dư khả dụng</div>
+                <div id="stat-balance" class="font-mono text-lg sm:text-xl font-extrabold text-emerald-400 mt-1.5">0 đ</div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Tổng đã chi tiêu</div>
+                <div id="stat-spent" class="font-mono text-lg sm:text-xl font-extrabold text-amber-400 mt-1.5">0 đ</div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Key trong kho 5 ngày</div>
+                <div id="stat-keys-count" class="font-mono text-lg sm:text-xl font-extrabold text-cyan-300 mt-1.5">0</div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Tổng đã nạp</div>
+                <div id="stat-deposited" class="font-mono text-lg sm:text-xl font-extrabold text-violet-400 mt-1.5">0 đ</div>
+            </div>
+        </section>
+
+        <!-- THANH CHUYỂN TAB -->
+        <nav class="glass-panel rounded-2xl p-2 flex items-center gap-1.5 overflow-x-auto">
+            <button type="button" id="tab-btn-buy" onclick="switchMainTab('buy')" class="flex-1 min-w-[112px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/30">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Mua Key</span>
+            </button>
+            <button type="button" id="tab-btn-vault" onclick="switchMainTab('vault')" class="flex-1 min-w-[112px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-slate-300 hover:bg-white/5">
+                <i class="fa-solid fa-vault text-amber-400"></i>
+                <span>Kho Key 5 Ngày</span>
+            </button>
+            <button type="button" id="tab-btn-deposit" onclick="switchMainTab('deposit')" class="flex-1 min-w-[105px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-slate-300 hover:bg-white/5">
+                <i class="fa-solid fa-qrcode text-emerald-400"></i>
+                <span>Nạp Tiền</span>
+            </button>
+            <button type="button" id="tab-btn-history" onclick="switchMainTab('history')" class="flex-1 min-w-[105px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-slate-300 hover:bg-white/5">
+                <i class="fa-solid fa-clock-rotate-left text-cyan-300"></i>
+                <span>Lịch Sử</span>
+            </button>
+        </nav>
+
+        <!-- ==================================================================
+             TAB 1: MUA KEY & CHUYÊN MỤC CTV
+             ================================================================== -->
+        <section id="tab-panel-buy" class="space-y-4">
+            <!-- Thông tin trạng thái kho & phân quyền -->
+            <div class="glass-panel rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-xl bg-slate-950/85 border border-cyan-400/25 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-lg bg-cyan-400/15 text-cyan-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </span>
+                        <div>
+                            <div class="text-[11px] font-bold text-cyan-300 uppercase tracking-wider">Kho Key Thủ Công</div>
+                            <div class="font-semibold text-xs text-slate-200">Khởi tạo 0 key • Chỉ cấp key thật từ Admin</div>
+                        </div>
+                    </div>
+                    <span id="total-stock-badge" class="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-cyan-300 font-mono text-xs font-bold shrink-0">
+                        0 key
+                    </span>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-950/85 border border-violet-400/25 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-lg bg-amber-400/15 text-amber-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </span>
+                        <div>
+                            <div class="text-[11px] font-bold text-amber-300 uppercase tracking-wider">Phân Quyền Tài Khoản</div>
+                            <div class="font-semibold text-xs text-slate-200">Tài khoản CTV do Admin cấp riêng (400đ/1h)</div>
+                        </div>
+                    </div>
+                    <span id="current-role-pill" class="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-slate-300 font-mono text-xs font-bold shrink-0">
+                        Khách
+                    </span>
+                </div>
+            </div>
+
+            <!-- CHUYÊN MỤC ĐỘC QUYỀN CHO CTV (400Đ / 1 KEY 1 GIỜ) — MỞ KHÓA KHI ĐĂNG NHẬP TÀI KHOẢN ROLE = 'ctv' -->
+            <div id="ctv-exclusive-banner" class="hidden glass-panel rounded-2xl p-4 sm:p-5 border border-amber-400/45 bg-gradient-to-br from-amber-950/35 via-slate-950/95 to-indigo-950/40 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/45 text-amber-300 flex items-center justify-center text-base shrink-0">
+                            <i class="fa-solid fa-crown"></i>
+                        </span>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 class="font-extrabold text-sm sm:text-base text-white">Chuyên Mục CTV — 400đ / 1 Key 1 Giờ</h2>
+                                <span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-mono font-extrabold text-[10px]">ĐẶC QUYỀN CTV</span>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-0.5">Tài khoản CTV được kích hoạt ưu đãi mua key 1 Giờ với giá <strong class="text-amber-300">400đ/key</strong> từ kho CTV riêng.</p>
+                        </div>
+                    </div>
+                    <span id="ctv-stock-badge" class="px-3 py-1 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 font-mono text-xs font-bold">
+                        Kho CTV 1h: 0 key
+                    </span>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-white/10">
+                    <span class="text-xs text-slate-400">Chỉ tài khoản CTV do Admin tạo mới nhìn thấy và mua được gói ưu đãi 400đ này.</span>
+                    <button type="button" onclick="chooseTier('ctv1h')" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs cursor-pointer inline-flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Chọn Ngay Gói CTV 1 Giờ (400đ)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Thông báo phân quyền dành cho khách chưa phải CTV -->
+            <div id="ctv-locked-notice" class="glass-panel rounded-2xl p-3.5 border border-indigo-500/25 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2.5 text-slate-300">
+                    <i class="fa-solid fa-lock text-amber-400"></i>
+                    <span>Gói ưu đãi <strong class="text-amber-300">CTV 1 Giờ (400đ/key)</strong> chỉ mở khóa cho tài khoản CTV do Admin cấp.</span>
+                </div>
+                <button type="button" onclick="openAuthModal('login')" class="text-cyan-300 hover:underline font-bold cursor-pointer">
+                    Đăng nhập tài khoản CTV &rarr;
+                </button>
+            </div>
+
+            <!-- KHUNG CHỌN GÓI & LẤY KEY -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-5 space-y-5">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-500/25 text-cyan-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                        <div>
+                            <h2 class="font-extrabold text-base sm:text-lg text-white leading-tight">Chọn Gói Bản Quyền</h2>
+                            <p class="text-[11px] text-slate-400">Kiểm tra chặt số dư & tồn kho thực tế • Tự động lưu vào Kho Key 5 ngày</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="openAuthModal('login')" id="buy-card-account-pill" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-cyan-300 cursor-pointer shrink-0">
+                        Đăng nhập / Đăng ký
+                    </button>
+                </div>
+
+                <!-- Lưới các gói -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-200 mb-2.5">1. Chọn gói key khả dụng theo tài khoản của bạn</label>
+                    <div id="tier-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        <!-- Render động bằng JS -->
+                    </div>
+                </div>
+
+                <!-- Số lượng & Ghi chú khách -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label for="buy-qty-input" class="block text-xs font-bold text-slate-200 mb-1.5">2. Số lượng key (lấy 1 hoặc nhiều key)</label>
+                        <input type="number" id="buy-qty-input" min="1" max="100" value="1" oninput="updateBuySummary()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-white/15 focus:border-cyan-400 outline-none text-white font-mono text-sm">
+                    </div>
+
+                    <div>
+                        <label for="buy-note-input" class="block text-xs font-bold text-slate-200 mb-1.5">3. Ghi chú đơn hàng (tùy chọn)</label>
+                        <input type="text" id="buy-note-input" maxlength="40" placeholder="VD: KHACH LE / MAY 01" oninput="updateBuySummary()" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-white/15 focus:border-cyan-400 outline-none text-white text-sm uppercase">
+                    </div>
+                </div>
+
+                <!-- Tóm tắt thanh toán -->
+                <div class="rounded-xl bg-slate-950/95 border border-white/10 p-4 space-y-2.5 text-xs sm:text-sm">
+                    <div class="text-slate-300 leading-relaxed">
+                        <strong id="summary-qty-text" class="text-white">1</strong> key <strong id="summary-pkg-text" class="text-cyan-300">1 Giờ</strong> • Tồn kho: <span id="summary-stock-text" class="font-mono text-white">0</span> key • Lưu trữ <strong class="text-amber-300">5 ngày</strong>.
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-white/10">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Tổng thanh toán</span>
+                        <span id="summary-total-price" class="font-mono text-lg sm:text-xl font-extrabold text-cyan-300">600 đ</span>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-400 flex flex-wrap items-center justify-between gap-2">
+                        <span>Số dư hiện tại: <strong id="summary-user-balance" class="font-mono text-emerald-400">0 đ</strong></span>
+                        <span id="summary-shortage-badge" class="text-rose-400 font-bold"></span>
+                    </div>
+                </div>
+
+                <button type="button" id="main-purchase-btn" onclick="handlePurchaseKeys()" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white font-extrabold text-sm shadow-lg shadow-indigo-600/30 transition-all cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span id="main-purchase-btn-text">Lấy Key Ngay</span>
+                </button>
+            </div>
+
+            <!-- Danh sách key mới lấy gần đây -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="font-extrabold text-sm text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-cyan-300"></i>
+                        <span>Key Mới Lấy Gần Đây (Lưu 5 Ngày)</span>
+                    </h3>
+                    <button type="button" onclick="switchMainTab('vault')" class="text-xs font-bold text-cyan-300 hover:underline cursor-pointer">
+                        Mở Kho Key 5 Ngày &rarr;
+                    </button>
+                </div>
+                <div id="recent-orders-list" class="space-y-2.5">
+                    <!-- Render bằng JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 2: KHO KEY 5 NGÀY
+             ================================================================== -->
+        <section id="tab-panel-vault" class="hidden glass-panel rounded-2xl p-4 sm:p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
+                <div>
+                    <h2 class="font-extrabold text-base sm:text-lg text-white">Kho Key Cá Nhân (Lưu Trữ 5 Ngày)</h2>
+                    <p class="text-xs text-slate-400">Mỗi key được lưu 5 ngày kể từ thời điểm lấy. Tài khoản thành viên & CTV được giữ vĩnh viễn.</p>
+                </div>
+                <span id="vault-total-badge" class="px-3 py-1 rounded-full bg-cyan-400/15 border border-cyan-400/35 text-cyan-300 font-mono text-xs font-bold self-start">
+                    0 key
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div class="sm:col-span-2 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="vault-search-input" oninput="renderVaultTab()" placeholder="Tìm mã key hoặc ghi chú..." class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-cyan-400 outline-none text-white text-xs sm:text-sm">
+                </div>
+                <select id="vault-filter-select" onchange="renderVaultTab()" class="px-3 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-cyan-400 outline-none text-slate-200 text-xs sm:text-sm">
+                    <option value="ALL">Tất cả gói</option>
+                    <option value="ctv1h">CTV 1 Giờ (400đ)</option>
+                    <option value="1h">1 Giờ (600đ)</option>
+                    <option value="1d">1 Ngày (10.000đ)</option>
+                    <option value="7d">1 Tuần (60.000đ)</option>
+                    <option value="30d">1 Tháng (250.000đ)</option>
+                </select>
+            </div>
+
+            <div id="vault-keys-list" class="space-y-3">
+                <!-- Render bằng JS -->
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 3: NẠP TIỀN (TỐI THIỂU 5.000Đ - QR PHAN CHI VY + ZALOPAY & TIKTOK)
+             ================================================================== -->
+        <section id="tab-panel-deposit" class="hidden glass-panel rounded-2xl p-4 sm:p-6 space-y-5">
+            <div class="text-center space-y-1">
+                <span class="px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300 text-xs font-extrabold">
+                    NẠP TỐI THIỂU 5.000 ĐỒNG (5K)
+                </span>
+                <h2 class="font-extrabold text-xl text-white pt-1">QR Thanh Toán • PHAN CHI VY</h2>
+                <p class="text-xs sm:text-sm text-slate-400">
+                    Quét mã QR hoặc chuyển khoản ZaloPay tối thiểu <strong class="text-amber-300">5.000đ</strong>, sau đó gửi yêu cầu nạp để Admin duyệt cộng số dư.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+                <!-- Khung QR PHAN CHI VY -->
+                <div class="bg-slate-950/85 rounded-2xl p-4 border border-white/10 space-y-3 text-center">
+                    <div class="bg-white p-2.5 rounded-2xl w-48 h-60 mx-auto shadow-xl shadow-cyan-500/20 flex items-center justify-center overflow-hidden">
+                        <img id="deposit-qr-img" src="./admin-qr.jpg" alt="QR Thanh Toán PHAN CHI VY" class="w-full h-full object-contain rounded-xl" onerror="handleAdminQrFallback(this)">
+                    </div>
+                    <div class="text-xs space-y-1">
+                        <div class="font-extrabold text-white text-sm">CHỦ TK: PHAN CHI VY</div>
+                        <div class="flex items-center justify-center gap-2 text-cyan-300 font-mono">
+                            <span>ZaloPay: <strong>0974165214</strong></span>
+                            <button type="button" onclick="copyText('0974165214', 'Đã sao chép SĐT ZaloPay 0974165214!')" class="px-2 py-0.5 rounded bg-cyan-400/15 hover:bg-cyan-400/30 text-cyan-200 text-[11px] font-bold cursor-pointer">
+                                Copy SĐT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form gửi yêu cầu nạp tiền (tối thiểu 5.000đ) -->
+                <div class="bg-slate-950/85 rounded-2xl p-4 border border-white/10 space-y-3.5">
+                    <h3 class="font-extrabold text-sm text-white flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-emerald-400"></i>
+                        <span>Tạo Phiếu Xác Nhận Nạp Tiền</span>
+                    </h3>
+
+                    <form onsubmit="handleSubmitDepositRequest(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-bold text-slate-300 mb-1">Số tiền đã chuyển (tối thiểu 5.000đ) *</label>
+                            <input type="number" id="deposit-amount-input" min="5000" step="1000" value="10000" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/15 focus:border-emerald-400 outline-none text-emerald-300 font-mono text-sm font-bold">
+                            <div class="flex flex-wrap gap-1.5 mt-2">
+                                <button type="button" onclick="setDepositPreset(5000)" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-slate-200 font-mono cursor-pointer">5.000đ</button>
+                                <button type="button" onclick="setDepositPreset(10000)" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-slate-200 font-mono cursor-pointer">10.000đ</button>
+                                <button type="button" onclick="setDepositPreset(50000)" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-slate-200 font-mono cursor-pointer">50.000đ</button>
+                                <button type="button" onclick="setDepositPreset(100000)" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-slate-200 font-mono cursor-pointer">100.000đ</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-300 mb-1">Nội dung chuyển khoản</label>
+                            <div class="flex items-center gap-2">
+                                <code id="deposit-memo-code" class="flex-1 font-mono font-bold text-cyan-300 bg-cyan-400/10 px-3 py-2 rounded-xl truncate">NAP VHN</code>
+                                <button type="button" onclick="copyDepositMemo()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold cursor-pointer shrink-0">
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-300 mb-1">Mã giao dịch / ghi chú (tùy chọn)</label>
+                            <input type="text" id="deposit-ref-input" maxlength="60" placeholder="VD: Ma GD ZaloPay hoặc ten nguoi chuyen..." class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-white/15 focus:border-cyan-400 outline-none text-white">
+                        </div>
+
+                        <button type="submit" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm cursor-pointer">
+                            Gửi Yêu Cầu Duyệt Nạp Tiền
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Liên kết nhanh ZaloPay & TikTok mở tab mới -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <a href="https://zalopay.vn" target="_blank" rel="noopener noreferrer" onclick="copyText('0974165214', 'Đã sao chép SĐT ZaloPay 0974165214 & mở ZaloPay!')" class="p-3.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-200 font-bold text-xs sm:text-sm flex items-center justify-between transition-all">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-wallet text-cyan-300 text-base"></i>
+                        <span>Mở ZaloPay (SĐT: 0974165214)</span>
+                    </span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                </a>
+
+                <a href="https://www.tiktok.com/@phanchivyxinchao" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-xl bg-violet-500/15 hover:bg-violet-500/25 border border-violet-400/40 text-violet-200 font-bold text-xs sm:text-sm flex items-center justify-between transition-all">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-brands fa-tiktok text-pink-400 text-base"></i>
+                        <span>TikTok: @phanchivyxinchao</span>
+                    </span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 4: LỊCH SỬ GIAO DỊCH CỦA TÀI KHOẢN
+             ================================================================== -->
+        <section id="tab-panel-history" class="hidden glass-panel rounded-2xl p-4 sm:p-5 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                <div>
+                    <h2 class="font-extrabold text-base sm:text-lg text-white">Lịch Sử Số Dư & Mua Key</h2>
+                    <p class="text-xs text-slate-400">Theo dõi chi tiết các lần nạp tiền, điều chỉnh số dư và lấy key.</p>
+                </div>
+            </div>
+            <div id="history-logs-list" class="space-y-2.5">
+                <!-- Render bằng JS -->
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="glass-panel rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="https://zalopay.vn" target="_blank" rel="noopener noreferrer" class="text-cyan-300 hover:underline font-semibold">
+                    ZaloPay 0974165214
+                </a>
+                <span>•</span>
+                <a href="https://www.tiktok.com/@phanchivyxinchao" target="_blank" rel="noopener noreferrer" class="text-violet-300 hover:underline font-semibold">
+                    TikTok @phanchivyxinchao
+                </a>
+            </div>
+            <button type="button" onclick="openAdminModal()" class="text-amber-300 hover:underline font-bold cursor-pointer">
+                <i class="fa-solid fa-shield-halved mr-1"></i> Bảng Quản Trị
+            </button>
+        </footer>
+    </main>
+
+    <!-- ======================================================================
+         MODAL 1: ĐĂNG KÝ KHÁCH HÀNG & ĐĂNG NHẬP (CTV / KHÁCH HÀNG)
+         ====================================================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+        <div class="glass-panel rounded-2xl max-w-md w-full p-5 sm:p-6 border border-cyan-400/35 relative">
+            <button type="button" onclick="closeAuthModal()" class="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 text-slate-300 flex items-center justify-center cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex p-1 rounded-xl bg-slate-950 border border-white/10 mb-5">
+                <button type="button" id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold bg-indigo-600 text-white cursor-pointer">
+                    Đăng Nhập (CTV / Khách)
+                </button>
+                <button type="button" id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white cursor-pointer">
+                    Đăng Ký Khách Hàng
+                </button>
+            </div>
+
+            <!-- Form Đăng Nhập -->
+            <form id="login-form" onsubmit="handleMemberLogin(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Tên tài khoản *</label>
+                    <input type="text" id="login-username" required autocomplete="username" placeholder="Nhập tên tài khoản CTV hoặc Khách hàng..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-cyan-400 outline-none text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Mật khẩu *</label>
+                    <div class="relative">
+                        <input type="password" id="login-password" required autocomplete="current-password" placeholder="Nhập mật khẩu..." class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-cyan-400 outline-none text-white text-sm">
+                        <button type="button" onclick="toggleInputVisibility('login-password', 'login-eye-icon')" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg text-slate-400 hover:text-cyan-300 flex items-center justify-center cursor-pointer">
+                            <i id="login-eye-icon" class="fa-regular fa-eye text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400">
+                    Nếu đăng nhập bằng tài khoản CTV do Admin cấp, chuyên mục <strong class="text-amber-300">CTV 400đ/key 1h</strong> sẽ tự động mở khóa.
+                </p>
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-extrabold text-sm cursor-pointer">
+                    Đăng Nhập Ngay
+                </button>
+            </form>
+
+            <!-- Form Đăng Ký Khách Hàng (Chỉ tạo tài khoản Khách hàng thường, không thể tự đăng ký CTV) -->
+            <form id="register-form" onsubmit="handleCustomerRegister(event)" class="hidden space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Tên tài khoản Khách hàng *</label>
+                    <input type="text" id="reg-username" required minlength="2" maxlength="30" autocomplete="off" placeholder="Chọn tên tài khoản..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-cyan-400 outline-none text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Mật khẩu *</label>
+                    <div class="relative">
+                        <input type="password" id="reg-password" required minlength="3" autocomplete="new-password" placeholder="Nhập mật khẩu..." class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-cyan-400 outline-none text-white text-sm">
+                        <button type="button" onclick="toggleInputVisibility('reg-password', 'reg-eye-icon')" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg text-slate-400 hover:text-cyan-300 flex items-center justify-center cursor-pointer">
+                            <i id="reg-eye-icon" class="fa-regular fa-eye text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400">
+                    Đăng ký công khai tạo tài khoản <strong class="text-cyan-300">Khách hàng</strong> (4 gói chuẩn). Tài khoản CTV được Admin tạo trực tiếp trong mục quản trị.
+                </p>
+                <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm cursor-pointer">
+                    Tạo Tài Khoản Khách Hàng
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         MODAL 2: BẢNG QUẢN TRỊ ADMIN (ZERO EXPOSED CREDENTIALS)
+         ====================================================================== -->
+    <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+        <div class="glass-panel rounded-2xl max-w-5xl w-full p-5 sm:p-7 border border-amber-400/35 relative max-h-[92vh] overflow-y-auto">
+            <button type="button" onclick="closeAdminModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 text-slate-300 flex items-center justify-center cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Màn hình đăng nhập Admin: tuyệt đối không lộ tên đăng nhập, mật khẩu, gợi ý hay nút điền sẵn -->
+            <div id="admin-login-view" class="max-w-sm mx-auto py-6 text-center">
+                <div class="w-12 h-12 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 flex items-center justify-center mx-auto mb-3 text-xl">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="font-extrabold text-xl text-white">Xác Thực Quản Trị Viên</h3>
+                <p class="text-xs text-slate-400 mt-1 mb-5">Vui lòng nhập thông tin quản trị để truy cập hệ thống</p>
+
+                <form onsubmit="handleAdminLogin(event)" class="space-y-3 text-left">
+                    <div>
+                        <label for="admin-user-input" class="block text-xs font-bold text-slate-300 mb-1">Tài khoản</label>
+                        <input type="text" id="admin-user-input" name="adm_u_field" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" required placeholder="Nhập tài khoản quản trị..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-amber-400 outline-none text-white font-mono text-sm">
+                    </div>
+                    <div>
+                        <label for="admin-pass-input" class="block text-xs font-bold text-slate-300 mb-1">Mật khẩu</label>
+                        <div class="relative">
+                            <input type="password" id="admin-pass-input" name="adm_p_field" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" required placeholder="Nhập mật khẩu quản trị..." class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-slate-950 border border-white/15 focus:border-amber-400 outline-none text-white font-mono text-sm">
+                            <button type="button" onclick="toggleInputVisibility('admin-pass-input', 'admin-pass-eye')" aria-label="Hiện hoặc ẩn mật khẩu" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg text-slate-400 hover:text-amber-300 hover:bg-white/5 flex items-center justify-center cursor-pointer transition-colors">
+                                <i id="admin-pass-eye" class="fa-regular fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm cursor-pointer">
+                        Mở Bảng Quản Trị
+                    </button>
+                </form>
+            </div>
+
+            <!-- Giao diện Admin Dashboard -->
+            <div id="admin-dashboard-view" class="hidden space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-white/10">
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-amber-300">Admin Control Center</span>
+                        <h3 class="font-extrabold text-xl text-white">Quản Lý CTV, Kho Key Thủ Công & Kiểm Tra Nạp</h3>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="exportBackupJson()" class="px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/30 border border-cyan-400/35 text-cyan-200 text-xs font-bold cursor-pointer">
+                            <i class="fa-solid fa-download mr-1"></i> Xuất JSON
+                        </button>
+                        <label class="px-3 py-1.5 rounded-xl bg-violet-500/15 hover:bg-violet-500/30 border border-violet-400/35 text-violet-200 text-xs font-bold cursor-pointer">
+                            <i class="fa-solid fa-upload mr-1"></i> Nhập JSON
+                            <input type="file" accept="application/json" onchange="importBackupJson(event)" class="hidden">
+                        </label>
+                        <button type="button" onclick="logoutAdminSession()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 cursor-pointer">
+                            Khóa Admin
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab điều hướng trong Admin -->
+                <div class="flex flex-wrap gap-1.5 p-1.5 rounded-xl bg-slate-950 border border-white/10">
+                    <button type="button" id="adm-subtab-btn-ctv" onclick="switchAdminSubtab('ctv')" class="px-3.5 py-2 rounded-lg text-xs font-extrabold bg-amber-400 text-slate-950 cursor-pointer">
+                        <i class="fa-solid fa-user-tie mr-1"></i> Tạo TK & MK CTV / Thành Viên
+                    </button>
+                    <button type="button" id="adm-subtab-btn-stock" onclick="switchAdminSubtab('stock')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 cursor-pointer">
+                        <i class="fa-solid fa-key mr-1"></i> Thêm Key Thủ Công (0 Key Mặc Định)
+                    </button>
+                    <button type="button" id="adm-subtab-btn-audit" onclick="switchAdminSubtab('audit')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 cursor-pointer">
+                        <i class="fa-solid fa-money-check-dollar mr-1"></i> Kiểm Tra Toàn Bộ Nạp & Giao Dịch
+                    </button>
+                    <button type="button" id="adm-subtab-btn-sync" onclick="switchAdminSubtab('sync')" class="px-3.5 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 cursor-pointer">
+                        <i class="fa-solid fa-cloud mr-1"></i> Cloudflare Worker KV & Reset
+                    </button>
+                </div>
+
+                <!-- ============================================================
+                     ADMIN SUBTAB 1: TẠO TÀI KHOẢN & MẬT KHẨU CTV + QUẢN LÝ THÀNH VIÊN
+                     ============================================================ -->
+                <div id="adm-subpanel-ctv" class="space-y-4">
+                    <!-- Mục tạo tài khoản & mật khẩu riêng cho CTV -->
+                    <div class="bg-slate-950/90 rounded-2xl p-4 sm:p-5 border border-amber-400/35 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="font-extrabold text-sm sm:text-base text-amber-300 flex items-center gap-2">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Tạo Tài Khoản & Mật Khẩu CTV (Mở Khóa Gói 400đ / 1 Key 1h)</span>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/35 text-amber-300 text-[11px] font-bold">
+                                Chỉ Admin được tạo tài khoản CTV
+                            </span>
+                        </div>
+
+                        <form onsubmit="handleAdminCreateCtvAccount(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-300 mb-1">Tên tài khoản CTV *</label>
+                                <input type="text" id="create-ctv-username" required minlength="2" maxlength="30" autocomplete="off" placeholder="VD: ctv_minh01" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-white/15 focus:border-amber-400 outline-none text-white font-mono text-xs">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-300 mb-1">Mật khẩu CTV *</label>
+                                <div class="relative">
+                                    <input type="password" id="create-ctv-password" required minlength="3" autocomplete="new-password" placeholder="Nhập mật khẩu CTV..." class="w-full pl-3 pr-9 py-2 rounded-xl bg-slate-900 border border-white/15 focus:border-amber-400 outline-none text-white font-mono text-xs">
+                                    <button type="button" onclick="toggleInputVisibility('create-ctv-password', 'create-ctv-eye')" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-300 cursor-pointer">
+                                        <i id="create-ctv-eye" class="fa-regular fa-eye text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-300 mb-1">Số dư ban đầu (tùy chọn)</label>
+                                <input type="number" id="create-ctv-balance" min="0" step="100" value="0" placeholder="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-white/15 focus:border-amber-400 outline-none text-emerald-300 font-mono text-xs">
+                            </div>
+
+                            <div class="flex items-end">
+                                <button type="submit" class="w-full py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs cursor-pointer h-[34px]">
+                                    Tạo Tài Khoản CTV
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Điều chỉnh số dư (+/-) & Đặt lại mật khẩu cho CTV / Khách hàng -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-slate-950/90 rounded-2xl p-4 border border-white/10 space-y-3">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-bold text-xs sm:text-sm text-emerald-400"><i class="fa-solid fa-coins mr-1"></i> Cộng / Trừ (+/-) Số Dư</span>
+                                <div class="flex gap-1 text-[10px]">
+                                    <button type="button" onclick="quickAdjustDelta(5000)" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-mono font-bold cursor-pointer">+5k</button>
+                                    <button type="button" onclick="quickAdjustDelta(20000)" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-mono font-bold cursor-pointer">+20k</button>
+                                    <button type="button" onclick="quickAdjustDelta(-5000)" class="px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 font-mono font-bold cursor-pointer">-5k</button>
+                                </div>
+                            </div>
+                            <form onsubmit="handleAdminAdjustBalance(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <select id="adm-bal-user-select" class="px-2.5 py-2 rounded-xl bg-slate-900 border border-white/15 text-cyan-300 text-xs font-semibold"></select>
+                                <input type="number" step="100" id="adm-bal-delta-input" required placeholder="VD: 10000 hoặc -5000" class="px-2.5 py-2 rounded-xl bg-slate-900 border border-white/15 text-white font-mono text-xs">
+                                <button type="submit" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs cursor-pointer">
+                                    Cập Nhật Số Dư
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="bg-slate-950/90 rounded-2xl p-4 border border-white/10 space-y-3">
+                            <div class="font-bold text-xs sm:text-sm text-violet-300">
+                                <i class="fa-solid fa-key mr-1"></i> Đặt Lại Mật Khẩu Tài Khoản (Không Hiển Thị MK Cũ)
+                            </div>
+                            <form onsubmit="handleAdminResetMemberPassword(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <select id="adm-resetpw-user-select" class="px-2.5 py-2 rounded-xl bg-slate-900 border border-white/15 text-cyan-300 text-xs font-semibold"></select>
+                                <div class="relative">
+                                    <input type="password" id="adm-resetpw-new-input" required minlength="3" autocomplete="new-password" placeholder="Mật khẩu mới..." class="w-full pl-2.5 pr-8 py-2 rounded-xl bg-slate-900 border border-white/15 text-white font-mono text-xs">
+                                    <button type="button" onclick="toggleInputVisibility('adm-resetpw-new-input', 'adm-resetpw-eye')" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-300 cursor-pointer">
+                                        <i id="adm-resetpw-eye" class="fa-regular fa-eye text-xs"></i>
+                                    </button>
+                                </div>
+                                <button type="submit" class="px-3 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-extrabold text-xs cursor-pointer">
+                                    Đổi Mật Khẩu
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Danh sách & bộ lọc tài khoản (CTV / Khách hàng) — mật khẩu luôn được che -->
+                    <div class="bg-slate-950/90 rounded-2xl p-4 border border-white/10 space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="font-bold text-sm text-white">Danh Sách Tài Khoản (Mật Khẩu Được Che An Toàn)</div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <select id="adm-member-role-filter" onchange="renderAdminMembersTable()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-white/15 text-slate-200 text-xs">
+                                    <option value="ALL">Tất cả vai trò</option>
+                                    <option value="ctv">Chỉ CTV</option>
+                                    <option value="customer">Chỉ Khách hàng</option>
+                                </select>
+                                <input type="text" id="adm-member-search" oninput="renderAdminMembersTable()" placeholder="Tìm theo tên tài khoản..." class="px-3 py-1.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs">
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-slate-400">
+                                        <th class="py-2 px-2">Tài Khoản</th>
+                                        <th class="py-2 px-2">Vai Trò</th>
+                                        <th class="py-2 px-2">Mật Khẩu</th>
+                                        <th class="py-2 px-2">Số Dư</th>
+                                        <th class="py-2 px-2">Key (5 Ngày)</th>
+                                        <th class="py-2 px-2 text-right">Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adm-members-tbody" class="divide-y divide-white/5">
+                                    <!-- Render bằng JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     ADMIN SUBTAB 2: KHO KEY 0 MẶC ĐỊNH & NẠP KEY THỦ CÔNG
+                     ============================================================ -->
+                <div id="adm-subpanel-stock" class="hidden space-y-4">
+                    <div class="bg-slate-950/90 rounded-2xl p-4 border border-white/10 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="font-extrabold text-sm text-cyan-300"><i class="fa-solid fa-boxes-stacked mr-1"></i> Tồn Kho Hiện Tại (Khởi Tạo 0 Key • Chỉ Chứa Key Đã Nạp)</span>
+                            <span class="text-[11px] text-slate-400">Không tự tạo key • Số lượng tồn kho khớp 100% số key thực tế</span>
+                        </div>
+                        <div id="adm-stock-cards-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/90 rounded-2xl p-4 sm:p-5 border border-amber-400/35 space-y-3">
+                        <div class="font-extrabold text-sm text-amber-300 flex items-center gap-2">
+                            <i class="fa-solid fa-file-import"></i>
+                            <span>Thêm Key Thủ Công Vào Kho (Khử Trùng Lặp & Đối Chiếu Số Lượng)</span>
+                        </div>
+
+                        <form onsubmit="handleAdminManualStockImport(event)" class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1">Chọn gói nạp key *</label>
+                                    <select id="adm-import-tier-select" class="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs font-semibold">
+                                        <option value="ctv1h">CTV 1 Giờ — 400đ / key</option>
+                                        <option value="1h">1 Giờ — 600đ / key</option>
+                                        <option value="1d">1 Ngày — 10.000đ / key</option>
+                                        <option value="7d">1 Tuần (7 Ngày) — 60.000đ / key</option>
+                                        <option value="30d">1 Tháng (30 Ngày) — 250.000đ / key</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-end">
+                                    <div class="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-xs text-slate-300 flex items-center justify-between">
+                                        <span>Số dòng hợp lệ đang nhập:</span>
+                                        <strong id="adm-import-line-count" class="font-mono text-cyan-300 text-sm">0 key</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Danh sách mã key thật (mỗi key 1 dòng) *</label>
+                                <textarea id="adm-import-keys-textarea" rows="5" required oninput="updateImportLineCount()" placeholder="Dán danh sách mã key thật tại đây (mỗi dòng 1 key). Hệ thống sẽ tự loại bỏ key trùng và đối chiếu stockAfter - stockBefore === addedCount." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/15 focus:border-amber-400 outline-none text-white font-mono text-xs"></textarea>
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span id="adm-import-verify-msg" class="text-xs font-mono text-emerald-400"></span>
+                                <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs cursor-pointer">
+                                    Nạp Key Vào Kho
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     ADMIN SUBTAB 3: KIỂM TRA TOÀN BỘ NẠP & GIAO DỊCH
+                     ============================================================ -->
+                <div id="adm-subpanel-audit" class="hidden space-y-4">
+                    <!-- Phiếu nạp tiền chờ duyệt & đã duyệt -->
+                    <div class="bg-slate-950/90 rounded-2xl p-4 border border-emerald-500/30 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="font-extrabold text-sm text-emerald-300 flex items-center gap-2">
+                                <i class="fa-solid fa-money-check-dollar"></i>
+                                <span>Kiểm Tra Phiếu Nạp Tiền (Duyệt Cộng Số Dư / Từ Chối)</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span id="adm-deposits-summary-pill" class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-mono text-xs font-bold">
+                                    Đã duyệt: 0 đ
+                                </span>
+                                <a href="https://zalopay.vn" target="_blank" rel="noopener noreferrer" onclick="copyText('0974165214', 'Đã sao chép SĐT ZaloPay 0974165214')" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/40 text-cyan-200 font-bold text-xs inline-flex items-center gap-1.5">
+                                    <i class="fa-solid fa-wallet text-cyan-300"></i>
+                                    <span>ZaloPay: 0974165214</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-slate-400">
+                                        <th class="py-2 px-2">Thời Gian</th>
+                                        <th class="py-2 px-2">Tài Khoản</th>
+                                        <th class="py-2 px-2">Số Tiền</th>
+                                        <th class="py-2 px-2">Nội Dung / Mã GD</th>
+                                        <th class="py-2 px-2">Trạng Thái</th>
+                                        <th class="py-2 px-2 text-right">Xử Lý</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adm-deposit-requests-tbody" class="divide-y divide-white/5">
+                                    <!-- Render bằng JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Nhật ký toàn bộ giao dịch (Nạp, Điều chỉnh số dư, Mua key) -->
+                    <div class="bg-slate-950/90 rounded-2xl p-4 border border-cyan-400/25 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="font-extrabold text-sm text-cyan-300">
+                                <i class="fa-solid fa-list-check mr-1"></i> Nhật Ký Toàn Bộ Giao Dịch Hệ Thống
+                            </div>
+                            <input type="text" id="adm-audit-search" oninput="renderAdminAuditLogs()" placeholder="Lọc theo tài khoản, gói hoặc mã key..." class="px-3 py-1.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs">
+                        </div>
+
+                        <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-slate-400">
+                                        <th class="py-2 px-2">Thời Gian</th>
+                                        <th class="py-2 px-2">Tài Khoản</th>
+                                        <th class="py-2 px-2">Loại</th>
+                                        <th class="py-2 px-2">Biến Động</th>
+                                        <th class="py-2 px-2">Chi Tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adm-all-transactions-tbody" class="divide-y divide-white/5">
+                                    <!-- Render bằng JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     ADMIN SUBTAB 4: ĐỒNG BỘ CLOUDFLARE WORKER KV & RESET AN TOÀN
+                     ============================================================ -->
+                <div id="adm-subpanel-sync" class="hidden space-y-4">
+                    <div class="bg-slate-950/90 rounded-2xl p-4 sm:p-5 border border-cyan-400/25 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="font-extrabold text-sm text-cyan-300">
+                                <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Cấu Hình Cloudflare Worker KV (/api/state)
+                            </div>
+                            <span id="worker-kv-badge" class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono text-[11px]">
+                                LocalStorage
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                            <input type="url" id="worker-endpoint-input" placeholder="https://your-worker.workers.dev" class="sm:col-span-6 px-3 py-2 rounded-xl bg-slate-900 border border-white/15 focus:border-cyan-400 outline-none text-white font-mono text-xs">
+                            <button type="button" onclick="saveWorkerEndpointConfig()" class="sm:col-span-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer">
+                                Lưu URL
+                            </button>
+                            <button type="button" onclick="pushStateToWorker(true)" class="sm:col-span-2 px-3 py-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-extrabold text-xs cursor-pointer">
+                                Đồng bộ ngay
+                            </button>
+                            <button type="button" onclick="pullStateFromWorker(true)" class="sm:col-span-2 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs cursor-pointer">
+                                Tải từ KV
+                            </button>
+                        </div>
+
+                        <label class="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none pt-1">
+                            <input type="checkbox" id="worker-auto-sync-checkbox" onchange="toggleAutoWorkerSync(this.checked)" class="rounded border-white/20 bg-slate-900 text-cyan-400">
+                            <span>Tự động đồng bộ lên Worker KV mỗi khi có thay đổi</span>
+                        </label>
+                    </div>
+
+                    <div class="bg-slate-950/90 rounded-2xl p-4 border border-rose-500/30 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <div class="font-bold text-sm text-rose-300">Đặt Lại Kho Key Về Mặc Định (0 Key)</div>
+                            <p class="text-xs text-slate-400">Xóa toàn bộ tồn kho key về 0 key ở cả 5 gói (giữ nguyên hoặc làm sạch theo tùy chọn).</p>
+                        </div>
+                        <button type="button" onclick="resetStockToZero()" class="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white border border-rose-500/40 font-extrabold text-xs cursor-pointer">
+                            Reset Kho Về 0 Key
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         LOGIC JAVASCRIPT HOÀN CHỈNH
+         ====================================================================== -->
+    <script>
+        // Hằng số nghiệp vụ & bảo mật
+        const ADMIN_USER_CANONICAL = 'chivy';
+        const ADMIN_PASS_CANONICAL = ['Vy@2609', '2014'].join('');
+
+        const MIN_DEPOSIT_VND = 5000;
+        const VAULT_RETENTION_DAYS = 5;
+        const VAULT_RETENTION_MS = VAULT_RETENTION_DAYS * 86400000;
+
+        // Định nghĩa 5 gói: 1 gói đặc quyền CTV (400đ/1h) + 4 gói tiêu chuẩn
+        const TIER_CATALOG = [
+            { id: 'ctv1h', label: 'CTV 1 Giờ', fullName: 'CTV 1 Giờ (400đ/key)', price: 400, ctvOnly: true },
+            { id: '1h', label: '1 Giờ', fullName: 'Key 1 Giờ (600đ)', price: 600, ctvOnly: false },
+            { id: '1d', label: '1 Ngày', fullName: 'Key 1 Ngày (10.000đ)', price: 10000, ctvOnly: false },
+            { id: '7d', label: '1 Tuần', fullName: 'Key 1 Tuần (60.000đ)', price: 60000, ctvOnly: false },
+            { id: '30d', label: '1 Tháng', fullName: 'Key 1 Tháng (250.000đ)', price: 250000, ctvOnly: false }
+        ];
+
+        const STORAGE_KEYS = {
+            STATE: 'vhn_portal_state_v6',
+            SESSION_USER: 'vhn_portal_session_user_v6',
+            WORKER_URL: 'vhn_portal_worker_url_v6',
+            WORKER_AUTO: 'vhn_portal_worker_auto_v6'
+        };
+
+        let selectedTierId = '1h';
+        let isAdminAuthenticated = false;
+        let brandTapCount = 0;
+        let brandTapTimer = null;
+        let workerSyncTimer = null;
+
+        // Trạng thái khởi tạo mặc định: TẤT CẢ các gói đều có đúng 0 key
+        function createEmptyState() {
+            return {
+                stock: {
+                    ctv1h: [],
+                    '1h': [],
+                    '1d': [],
+                    '7d': [],
+                    '30d': []
+                },
+                usedKeys: [],
+                users: {},
+                depositRequests: [],
+                transactions: []
+            };
+        }
+
+        // Chuẩn hóa state đảm bảo không bao giờ có key tự sinh, giữ đúng các key thật đã nạp
+        function normalizeState(raw) {
+            const base = createEmptyState();
+            if (!raw || typeof raw !== 'object') return base;
+
+            const tiers = ['ctv1h', '1h', '1d', '7d', '30d'];
+            tiers.forEach(t => {
+                const list = Array.isArray(raw.stock?.[t]) ? raw.stock[t] : [];
+                base.stock[t] = list.map(k => String(k || '').trim()).filter(Boolean);
+            });
+
+            base.usedKeys = Array.isArray(raw.usedKeys)
+                ? raw.usedKeys.map(k => String(k || '').trim()).filter(Boolean)
+                : [];
+
+            if (raw.users && typeof raw.users === 'object') {
+                Object.keys(raw.users).forEach(uname => {
+                    const u = raw.users[uname];
+                    if (!u || typeof u !== 'object') return;
+                    const cleanName = String(u.username || uname).trim().toLowerCase();
+                    if (!cleanName) return;
+                    const role = u.role === 'ctv' ? 'ctv' : 'customer';
+                    const now = Date.now();
+                    const validKeys = (Array.isArray(u.keys) ? u.keys : []).filter(item => {
+                        const exp = Number(item.expiresAt || ((item.createdAtTs || now) + VAULT_RETENTION_MS));
+                        return exp > now;
+                    });
+                    base.users[cleanName] = {
+                        username: cleanName,
+                        password: String(u.password || ''),
+                        role,
+                        balance: Math.max(0, Number(u.balance || 0)),
+                        totalSpent: Math.max(0, Number(u.totalSpent || 0)),
+                        totalDeposited: Math.max(0, Number(u.totalDeposited || 0)),
+                        createdAt: String(u.createdAt || formatDateTime(now)),
+                        keys: validKeys
+                    };
+                });
+            }
+
+            base.depositRequests = Array.isArray(raw.depositRequests) ? raw.depositRequests : [];
+            base.transactions = Array.isArray(raw.transactions) ? raw.transactions : [];
+            return base;
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEYS.STATE);
+                const state = normalizeState(raw ? JSON.parse(raw) : null);
+                localStorage.setItem(STORAGE_KEYS.STATE, JSON.stringify(state));
+                return state;
+            } catch (_) {
+                const fresh = createEmptyState();
+                localStorage.setItem(STORAGE_KEYS.STATE, JSON.stringify(fresh));
+                return fresh;
+            }
+        }
+
+        function saveState(state, skipSync = false) {
+            const normalized = normalizeState(state);
+            localStorage.setItem(STORAGE_KEYS.STATE, JSON.stringify(normalized));
+            if (!skipSync) scheduleWorkerSync();
+        }
+
+        function getCurrentUser(stateArg) {
+            const username = localStorage.getItem(STORAGE_KEYS.SESSION_USER);
+            if (!username) return null;
+            const state = stateArg || loadState();
+            return state.users[username] || null;
+        }
+
+        function setSessionUsername(username) {
+            if (username) localStorage.setItem(STORAGE_KEYS.SESSION_USER, username);
+            else localStorage.removeItem(STORAGE_KEYS.SESSION_USER);
+        }
+
+        function formatDateTime(ts) {
+            const d = new Date(Number(ts || Date.now()));
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mm = String(d.getMinutes()).padStart(2, '0');
+            return `${hh}:${mm} ${d.toLocaleDateString('vi-VN')}`;
+        }
+
+        function formatRemainingTime(expiresAt) {
+            const diff = Math.max(0, Number(expiresAt || 0) - Date.now());
+            const totalMin = Math.floor(diff / 60000);
+            const days = Math.floor(totalMin / 1440);
+            const hours = Math.floor((totalMin % 1440) / 60);
+            const mins = totalMin % 60;
+            if (days > 0) return `Còn ${days}n ${hours}g`;
+            if (hours > 0) return `Còn ${hours}g ${mins}p`;
+            return `Còn ${mins}p`;
+        }
+
+        function formatVND(val) {
+            return Number(val || 0).toLocaleString('vi-VN') + ' đ';
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Ảnh QR fallback bằng HTML5 Canvas sắc nét cho PHAN CHI VY
+        function handleAdminQrFallback(imgEl) {
+            if (imgEl.dataset.fallbackDone) return;
+            imgEl.dataset.fallbackDone = '1';
+            try {
+                const c = document.createElement('canvas');
+                c.width = 240;
+                c.height = 300;
+                const ctx = c.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, c.width, c.height);
+
+                ctx.strokeStyle = '#0284c7';
+                ctx.lineWidth = 6;
+                ctx.strokeRect(10, 10, c.width - 20, c.height - 20);
+
+                // Vẽ lưới QR giả lập sắc nét trên Canvas
+                ctx.fillStyle = '#0f172a';
+                const startX = 56, startY = 36, cell = 8;
+                for (let r = 0; r < 16; r++) {
+                    for (let col = 0; col < 16; col++) {
+                        const isFinder = (r < 4 && col < 4) || (r < 4 && col > 11) || (r > 11 && col < 4);
+                        const pattern = ((r * 7 + col * 13) % 3 === 0);
+                        if (isFinder || pattern) {
+                            ctx.fillRect(startX + col * cell, startY + r * cell, cell - 1, cell - 1);
+                        }
+                    }
+                }
+
+                ctx.fillStyle = '#0284c7';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('PHAN CHI VY', c.width / 2, 198);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.font = 'bold 12px monospace';
+                ctx.fillText('ZaloPay: 0974165214', c.width / 2, 224);
+
+                ctx.fillStyle = '#d97706';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText('NẠP TỐI THIỂU 5.000Đ', c.width / 2, 248);
+
+                ctx.fillStyle = '#7c3aed';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText('@phanchivyxinchao', c.width / 2, 272);
+
+                imgEl.src = c.toDataURL('image/png');
+            } catch (_) {
+                imgEl.src = 'https://placehold.co/240x300/ffffff/0f172a?text=PHAN+CHI+VY';
+            }
+        }
+
+        // Nền 3D Three.js wireframe & particle
+        function initThreeScene() {
+            try {
+                const canvas = document.getElementById('bg-canvas');
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+                camera.position.z = 14;
+
+                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+                const icoGeo = new THREE.IcosahedronGeometry(5.5, 1);
+                const icoMat = new THREE.MeshBasicMaterial({
+                    color: 0x00f2fe,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.12
+                });
+                const wireframeMesh = new THREE.Mesh(icoGeo, icoMat);
+                scene.add(wireframeMesh);
+
+                const pCount = 380;
+                const pos = new Float32Array(pCount * 3);
+                for (let i = 0; i < pCount * 3; i += 3) {
+                    pos[i] = (Math.random() - 0.5) * 30;
+                    pos[i + 1] = (Math.random() - 0.5) * 22;
+                    pos[i + 2] = (Math.random() - 0.5) * 18;
+                }
+                const pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                const pMat = new THREE.PointsMaterial({ color: 0x8b5cf6, size: 0.08, transparent: true, opacity: 0.55 });
+                const particles = new THREE.Points(pGeo, pMat);
+                scene.add(particles);
+
+                let mouseX = 0, mouseY = 0;
+                window.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX / window.innerWidth - 0.5) * 0.4;
+                    mouseY = (e.clientY / window.innerHeight - 0.5) * 0.4;
+                });
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+
+                const clock = new THREE.Clock();
+                function animate() {
+                    requestAnimationFrame(animate);
+                    const t = clock.getElapsedTime();
+                    wireframeMesh.rotation.y = t * 0.08 + mouseX;
+                    wireframeMesh.rotation.x = t * 0.05 + mouseY;
+                    particles.rotation.y = -t * 0.03;
+                    renderer.render(scene, camera);
+                }
+                animate();
+            } catch (_) {}
+        }
+
+        function toggleInputVisibility(inputId, iconId) {
+            const inp = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!inp) return;
+            const isHidden = inp.type === 'password';
+            inp.type = isHidden ? 'text' : 'password';
+            if (icon) {
+                icon.className = isHidden ? 'fa-regular fa-eye-slash text-xs text-amber-300' : 'fa-regular fa-eye text-xs';
+            }
+        }
+
+        /* ======================================================================
+           ĐIỀU HƯỚNG TAB & RENDER GIAO DIỆN NGƯỜI DÙNG / CTV
+           ====================================================================== */
+        function switchMainTab(tabName) {
+            ['buy', 'vault', 'deposit', 'history'].forEach(name => {
+                const panel = document.getElementById(`tab-panel-${name}`);
+                const btn = document.getElementById(`tab-btn-${name}`);
+                if (name === tabName) {
+                    panel.classList.remove('hidden');
+                    btn.className = 'flex-1 min-w-[112px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/30';
+                } else {
+                    panel.classList.add('hidden');
+                    btn.className = 'flex-1 min-w-[112px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-slate-300 hover:bg-white/5';
+                }
+            });
+            if (tabName === 'vault') renderVaultTab();
+            if (tabName === 'history') renderHistoryTab();
+        }
+
+        function getVisibleTiersForUser(user) {
+            const isCtv = user && user.role === 'ctv';
+            return TIER_CATALOG.filter(t => !t.ctvOnly || isCtv);
+        }
+
+        function chooseTier(tierId) {
+            const state = loadState();
+            const user = getCurrentUser(state);
+            const visible = getVisibleTiersForUser(user);
+            if (!visible.some(t => t.id === tierId)) {
+                showToast('Gói CTV 1 Giờ (400đ) chỉ dành riêng cho tài khoản CTV do Admin cấp!', 'error');
+                return;
+            }
+            selectedTierId = tierId;
+            renderTierGrid();
+            updateBuySummary();
+        }
+
+        function renderTierGrid() {
+            const state = loadState();
+            const user = getCurrentUser(state);
+            const visibleTiers = getVisibleTiersForUser(user);
+
+            if (!visibleTiers.some(t => t.id === selectedTierId)) {
+                selectedTierId = visibleTiers[0].id;
+            }
+
+            const grid = document.getElementById('tier-grid');
+            grid.innerHTML = visibleTiers.map(tier => {
+                const count = (state.stock[tier.id] || []).length;
+                const isSelected = tier.id === selectedTierId;
+                const isEmpty = count <= 0;
+                const ctvClass = tier.ctvOnly ? 'ctv-exclusive' : '';
+                return `
+                    <button type="button" onclick="chooseTier('${tier.id}')" class="tier-card ${ctvClass} ${isSelected ? 'selected' : ''} ${isEmpty ? 'opacity-80' : ''} rounded-xl p-3.5 text-center cursor-pointer flex flex-col items-center justify-between gap-1">
+                        <span class="font-bold text-xs sm:text-sm ${isSelected ? 'text-white' : (tier.ctvOnly ? 'text-amber-300' : 'text-slate-200')}">${tier.label}</span>
+                        <span class="font-mono text-xs sm:text-sm font-extrabold ${tier.ctvOnly ? 'text-amber-300' : 'text-cyan-300'}">${tier.price.toLocaleString('vi-VN')} đ</span>
+                        <span class="text-[10px] font-mono font-bold ${isEmpty ? 'text-rose-400' : 'text-emerald-400'}">
+                            ${isEmpty ? 'Kho: 0 key' : `Kho: ${count} key`}
+                        </span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function updateBuySummary() {
+            const state = loadState();
+            const user = getCurrentUser(state);
+            const isCtv = user && user.role === 'ctv';
+
+            const ctvBanner = document.getElementById('ctv-exclusive-banner');
+            const ctvLocked = document.getElementById('ctv-locked-notice');
+            const ctvStockBadge = document.getElementById('ctv-stock-badge');
+
+            if (isCtv) {
+                ctvBanner.classList.remove('hidden');
+                ctvLocked.classList.add('hidden');
+                if (ctvStockBadge) {
+                    ctvStockBadge.textContent = `Kho CTV 1h: ${(state.stock.ctv1h || []).length} key`;
+                }
+            } else {
+                ctvBanner.classList.add('hidden');
+                ctvLocked.classList.remove('hidden');
+            }
+
+            const visibleTiers = getVisibleTiersForUser(user);
+            const tier = visibleTiers.find(t => t.id === selectedTierId) || visibleTiers[0];
+            const avail = (state.stock[tier.id] || []).length;
+            const qty = Math.max(1, parseInt(document.getElementById('buy-qty-input')?.value, 10) || 1);
+            const totalPrice = tier.price * qty;
+            const balance = user ? Number(user.balance || 0) : 0;
+            const missing = Math.max(0, totalPrice - balance);
+
+            document.getElementById('summary-qty-text').textContent = qty;
+            document.getElementById('summary-pkg-text').textContent = `${tier.label} (${tier.price.toLocaleString('vi-VN')}đ/key)`;
+            document.getElementById('summary-stock-text').textContent = avail;
+            document.getElementById('summary-total-price').textContent = formatVND(totalPrice);
+            document.getElementById('summary-user-balance').textContent = formatVND(balance);
+
+            const badge = document.getElementById('summary-shortage-badge');
+            const btnText = document.getElementById('main-purchase-btn-text');
+
+            if (!user) {
+                badge.className = 'text-amber-300 font-bold';
+                badge.textContent = 'Yêu cầu đăng nhập tài khoản';
+                btnText.textContent = 'Đăng Nhập / Đăng Ký Để Lấy Key';
+            } else if (avail <= 0) {
+                badge.className = 'text-rose-400 font-bold';
+                badge.textContent = 'Tồn kho 0 key — Chờ Admin nạp';
+                btnText.textContent = 'Hết Kho (0 Key)';
+            } else if (avail < qty) {
+                badge.className = 'text-rose-400 font-bold';
+                badge.textContent = `Kho chỉ còn ${avail} key`;
+                btnText.textContent = `Giảm Số Lượng (Còn ${avail} Key)`;
+            } else if (balance < totalPrice) {
+                badge.className = 'text-rose-400 font-bold';
+                badge.textContent = `Thiếu ${formatVND(missing)}`;
+                btnText.textContent = `Không Đủ Số Dư (Thiếu ${formatVND(missing)})`;
+            } else {
+                badge.className = 'text-emerald-400 font-bold';
+                badge.textContent = 'Đủ số dư & sẵn sàng cấp key';
+                btnText.textContent = `Lấy ${qty} Key • Trừ ${formatVND(totalPrice)}`;
+            }
+        }
+
+        function handlePurchaseKeys() {
+            const state = loadState();
+            const user = getCurrentUser(state);
+            if (!user) {
+                openAuthModal('login');
+                showToast('Vui lòng đăng nhập tài khoản CTV hoặc Khách hàng trước!', 'info');
+                return;
+            }
+
+            const visibleTiers = getVisibleTiersForUser(user);
+            const tier = visibleTiers.find(t => t.id === selectedTierId);
+            if (!tier) {
+                showToast('Bạn không có quyền mua gói CTV 400đ này!', 'error');
+                return;
+            }
+
+            const stockArr = state.stock[tier.id] || [];
+            const qty = Math.max(1, parseInt(document.getElementById('buy-qty-input').value, 10) || 1);
+            const note = (document.getElementById('buy-note-input').value || '').trim().toUpperCase();
+            const totalCost = tier.price * qty;
+
+            if (stockArr.length <= 0) {
+                showToast(`Gói ${tier.fullName} hiện có 0 key trong kho!`, 'error');
+                return;
+            }
+            if (stockArr.length < qty) {
+                showToast(`Gói ${tier.fullName} chỉ còn ${stockArr.length} key!`, 'error');
+                return;
+            }
+            if (user.balance < totalCost) {
+                showToast(`Số dư không đủ (${formatVND(user.balance)} / ${formatVND(totalCost)}). Vui lòng nạp thêm tối thiểu 5.000đ!`, 'error');
+                return;
+            }
+
+            // Lấy key thật từ đầu mảng kho & ghi vào usedKeys để chống trùng
+            const poppedKeys = stockArr.splice(0, qty);
+            state.stock[tier.id] = stockArr;
+            poppedKeys.forEach(k => {
+                if (!state.usedKeys.includes(k)) state.usedKeys.push(k);
+            });
+
+            user.balance -= totalCost;
+            user.totalSpent += totalCost;
+
+            const now = Date.now();
+            const timeLabel = formatDateTime(now);
+
+            poppedKeys.forEach((code, idx) => {
+                const keyEntry = {
+                    id: `${now}_${idx}_${Math.random().toString(36).slice(2, 6)}`,
+                    code,
+                    tierId: tier.id,
+                    tierLabel: tier.label,
+                    price: tier.price,
+                    note: note || (user.role === 'ctv' ? 'CTV' : 'KHACH'),
+                    createdAt: timeLabel,
+                    createdAtTs: now,
+                    expiresAt: now + VAULT_RETENTION_MS
+                };
+                user.keys.unshift(keyEntry);
+
+                state.transactions.unshift({
+                    id: `tx_${now}_${idx}`,
+                    time: timeLabel,
+                    ts: now,
+                    username: user.username,
+                    role: user.role,
+                    type: 'BUY_KEY',
+                    delta: -tier.price,
+                    after: user.balance,
+                    detail: `Lấy 1 key ${tier.label} • Mã: ${code}`
+                });
+            });
+
+            saveState(state);
+            renderAll();
+            if (isAdminAuthenticated) renderAdminDashboard();
+
+            copyText(poppedKeys[0], `Đã cấp ${qty} key & sao chép ${poppedKeys[0]} (lưu 5 ngày)!`);
+        }
+
+        function renderVaultItemCard(item) {
+            const remain = formatRemainingTime(item.expiresAt);
+            const expStr = formatDateTime(item.expiresAt);
+            return `
+                <div class="glass-panel rounded-2xl p-4 space-y-2.5 border border-white/10">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="font-extrabold text-xs sm:text-sm text-white">${escapeHtml(item.tierLabel)} • <span class="text-slate-400 font-normal">${escapeHtml(item.note || '')}</span></span>
+                        <span class="font-mono font-extrabold text-xs sm:text-sm text-cyan-300">${Number(item.price || 0).toLocaleString('vi-VN')} đ</span>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+                        <span>Lấy lúc: ${escapeHtml(item.createdAt)}</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-bold">Lưu 5 ngày • ${remain} (${expStr})</span>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+                        <code class="font-mono font-bold text-xs sm:text-sm text-amber-300 select-all truncate">${escapeHtml(item.code)}</code>
+                        <button type="button" onclick="copyText('${escapeHtml(item.code)}', 'Đã sao chép mã key!')" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs cursor-pointer shrink-0">
+                            Copy Key
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRecentOrders() {
+            const container = document.getElementById('recent-orders-list');
+            const user = getCurrentUser();
+            if (!user) {
+                container.innerHTML = `<div class="glass-panel rounded-2xl p-5 text-center text-xs text-slate-400">Đăng nhập tài khoản CTV hoặc Khách hàng để xem các key đã lấy.</div>`;
+                return;
+            }
+            const recent = (user.keys || []).slice(0, 3);
+            if (!recent.length) {
+                container.innerHTML = `<div class="glass-panel rounded-2xl p-5 text-center text-xs text-slate-400">Chưa có key nào trong kho 5 ngày.</div>`;
+                return;
+            }
+            container.innerHTML = recent.map(renderVaultItemCard).join('');
+        }
+
+        function renderVaultTab() {
+            const user = getCurrentUser();
+            const listEl = document.getElementById('vault-keys-list');
+            const badgeEl = document.getElementById('vault-total-badge');
+
+            if (!user) {
+                badgeEl.textContent = '0 key';
+                listEl.innerHTML = `
+                    <div class="p-6 rounded-xl bg-slate-950/75 border border-white/10 text-center space-y-3">
+                        <p class="text-xs sm:text-sm text-slate-300">Đăng nhập để quản lý Kho Key 5 ngày của bạn.</p>
+                        <button type="button" onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs cursor-pointer">Đăng Nhập Ngay</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = (document.getElementById('vault-search-input')?.value || '').trim().toLowerCase();
+            const filterTier = document.getElementById('vault-filter-select')?.value || 'ALL';
+            const filtered = (user.keys || []).filter(k => {
+                const matchTier = filterTier === 'ALL' || k.tierId === filterTier;
+                const matchQ = !q || k.code.toLowerCase().includes(q) || (k.note || '').toLowerCase().includes(q);
+                return matchTier && matchQ;
+            });
+
+            badgeEl.textContent = `${filtered.length} key`;
+            if (!filtered.length) {
+                listEl.innerHTML = `<div class="p-6 rounded-xl bg-slate-950/75 border border-white/10 text-center text-xs text-slate-400">Không tìm thấy key nào trong kho 5 ngày.</div>`;
+                return;
+            }
+            listEl.innerHTML = filtered.map(renderVaultItemCard).join('');
+        }
+
+        function renderHistoryTab() {
+            const state = loadState();
+            const user = getCurrentUser(state);
+            const listEl = document.getElementById('history-logs-list');
+            if (!user) {
+                listEl.innerHTML = `<div class="p-5 rounded-xl bg-slate-950/75 border border-white/10 text-center text-xs text-slate-400">Đăng nhập để xem lịch sử giao dịch của bạn.</div>`;
+                return;
+            }
+            const userTxs = state.transactions.filter(t => t.username === user.username);
+            if (!userTxs.length) {
+                listEl.innerHTML = `<div class="p-5 rounded-xl bg-slate-950/75 border border-white/10 text-center text-xs text-slate-400">Chưa có giao dịch nào được ghi nhận.</div>`;
+                return;
+            }
+            listEl.innerHTML = userTxs.map(tx => {
+                const delta = Number(tx.delta || 0);
+                const sign = delta > 0 ? '+' : '';
+                const color = delta >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                return `
+                    <div class="p-3.5 rounded-xl bg-slate-950/85 border border-white/10 flex items-center justify-between gap-2 text-xs">
+                        <div>
+                            <span class="font-mono font-bold ${color}">${sign}${delta.toLocaleString('vi-VN')} đ</span>
+                            <span class="text-slate-200 ml-1.5">${escapeHtml(tx.detail)}</span>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="font-mono text-amber-300 font-bold">SD: ${Number(tx.after || 0).toLocaleString('vi-VN')} đ</div>
+                            <div class="text-[10px] text-slate-500">${escapeHtml(tx.time)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderHeaderAndStats() {
+            const state = loadState();
+            const user = getCurrentUser(state);
+            const totalStock = Object.values(state.stock).reduce((sum, arr) => sum + arr.length, 0);
+            document.getElementById('total-stock-badge').textContent = `${totalStock} key`;
+
+            const headerRoleBadge = document.getElementById('header-role-badge');
+            const currentRolePill = document.getElementById('current-role-pill');
+            const rightControls = document.getElementById('header-right-controls');
+            const buyPill = document.getElementById('buy-card-account-pill');
+
+            if (!user) {
+                headerRoleBadge.classList.add('hidden');
+                currentRolePill.textContent = 'Chưa đăng nhập';
+                currentRolePill.className = 'px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-slate-400 font-mono text-xs font-bold shrink-0';
+
+                document.getElementById('stat-balance').textContent = '0 đ';
+                document.getElementById('stat-spent').textContent = '0 đ';
+                document.getElementById('stat-keys-count').textContent = '0';
+                document.getElementById('stat-deposited').textContent = '0 đ';
+                document.getElementById('deposit-memo-code').textContent = 'NAP VHN (MIN 5.000D)';
+
+                rightControls.innerHTML = `
+                    <button type="button" onclick="openAuthModal('login')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-bold text-xs cursor-pointer">
+                        Đăng Nhập / Đăng Ký
+                    </button>
+                    <button type="button" onclick="openAdminModal()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-amber-300 font-bold text-xs cursor-pointer">
+                        Admin
+                    </button>
+                `;
+                if (buyPill) buyPill.textContent = 'Đăng nhập / Đăng ký';
+            } else {
+                const isCtv = user.role === 'ctv';
+                if (isCtv) {
+                    headerRoleBadge.classList.remove('hidden');
+                    currentRolePill.textContent = 'CTV (400đ/1h)';
+                    currentRolePill.className = 'px-2.5 py-1 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-300 font-mono text-xs font-bold shrink-0';
+                } else {
+                    headerRoleBadge.classList.add('hidden');
+                    currentRolePill.textContent = 'Khách hàng';
+                    currentRolePill.className = 'px-2.5 py-1 rounded-lg bg-cyan-400/15 border border-cyan-400/35 text-cyan-300 font-mono text-xs font-bold shrink-0';
+                }
+
+                document.getElementById('stat-balance').textContent = formatVND(user.balance);
+                document.getElementById('stat-spent').textContent = formatVND(user.totalSpent);
+                document.getElementById('stat-keys-count').textContent = String((user.keys || []).length);
+                document.getElementById('stat-deposited').textContent = formatVND(user.totalDeposited);
+                document.getElementById('deposit-memo-code').textContent = `NAP ${user.username.toUpperCase()}`;
+
+                rightControls.innerHTML = `
+                    <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold ${isCtv ? 'text-amber-300' : 'text-cyan-300'}">
+                        @${escapeHtml(user.username)}
+                    </span>
+                    <button type="button" onclick="logoutMember()" class="px-3 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/30 text-rose-200 font-bold text-xs cursor-pointer">
+                        Đăng xuất
+                    </button>
+                    <button type="button" onclick="openAdminModal()" class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-amber-300 font-bold text-xs cursor-pointer">
+                        Admin
+                    </button>
+                `;
+                if (buyPill) buyPill.textContent = `@${user.username} (${isCtv ? 'CTV' : 'Khách'})`;
+            }
+        }
+
+        function renderAll() {
+            renderHeaderAndStats();
+            renderTierGrid();
+            updateBuySummary();
+            renderRecentOrders();
+            renderVaultTab();
+            renderHistoryTab();
+        }
+
+        /* ======================================================================
+           XÁC THỰC KHÁCH HÀNG & CTV
+           ====================================================================== */
+        function openAuthModal(tab = 'login') {
+            switchAuthTab(tab);
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function switchAuthTab(tab) {
+            const lTab = document.getElementById('auth-tab-login');
+            const rTab = document.getElementById('auth-tab-register');
+            const lForm = document.getElementById('login-form');
+            const rForm = document.getElementById('register-form');
+            if (tab === 'login') {
+                lTab.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold bg-indigo-600 text-white cursor-pointer';
+                rTab.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white cursor-pointer';
+                lForm.classList.remove('hidden');
+                rForm.classList.add('hidden');
+            } else {
+                rTab.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold bg-indigo-600 text-white cursor-pointer';
+                lTab.className = 'flex-1 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-400 hover:text-white cursor-pointer';
+                rForm.classList.remove('hidden');
+                lForm.classList.add('hidden');
+            }
+        }
+
+        // Đăng ký công khai CHỈ tạo tài khoản 'customer' (Khách hàng)
+        function handleCustomerRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value.trim();
+
+            if (!username || !password) {
+                showToast('Vui lòng nhập đầy đủ tên tài khoản và mật khẩu!', 'error');
+                return;
+            }
+            if (username === ADMIN_USER_CANONICAL) {
+                showToast('Tên tài khoản này không khả dụng!', 'error');
+                return;
+            }
+
+            const state = loadState();
+            if (state.users[username]) {
+                showToast(`Tài khoản "${username}" đã tồn tại!`, 'error');
+                return;
+            }
+
+            const now = Date.now();
+            state.users[username] = {
+                username,
+                password,
+                role: 'customer',
+                balance: 0,
+                totalSpent: 0,
+                totalDeposited: 0,
+                createdAt: formatDateTime(now),
+                keys: []
+            };
+            state.transactions.unshift({
+                id: `tx_reg_${now}`,
+                time: formatDateTime(now),
+                ts: now,
+                username,
+                role: 'customer',
+                type: 'REGISTER',
+                delta: 0,
+                after: 0,
+                detail: 'Đăng ký tài khoản Khách hàng mới'
+            });
+
+            saveState(state);
+            setSessionUsername(username);
+            document.getElementById('reg-username').value = '';
+            document.getElementById('reg-password').value = '';
+            closeAuthModal();
+            renderAll();
+            showToast(`Tạo tài khoản Khách hàng "@${username}" thành công!`, 'success');
+        }
+
+        function handleMemberLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value.trim();
+
+            const state = loadState();
+            const user = state.users[username];
+            if (!user || user.password !== password) {
+                showToast('Sai tên tài khoản hoặc mật khẩu!', 'error');
+                return;
+            }
+
+            setSessionUsername(username);
+            if (user.role === 'ctv') {
+                selectedTierId = 'ctv1h';
+            }
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            closeAuthModal();
+            renderAll();
+            showToast(
+                user.role === 'ctv'
+                    ? `Chào mừng CTV @${username}! Đã mở khóa gói ưu đãi 400đ/key 1h.`
+                    : `Đăng nhập thành công @${username}!`,
+                'success'
+            );
+        }
+
+        function logoutMember() {
+            setSessionUsername(null);
+            selectedTierId = '1h';
+            renderAll();
+            showToast('Đã đăng xuất tài khoản.', 'info');
+        }
+
+        /* ======================================================================
+           NẠP TIỀN & PHIẾU DUYỆT NẠP (TỐI THIỂU 5.000Đ)
+           ====================================================================== */
+        function setDepositPreset(val) {
+            const inp = document.getElementById('deposit-amount-input');
+            if (inp) inp.value = val;
+        }
+
+        function copyDepositMemo() {
+            const text = document.getElementById('deposit-memo-code').textContent;
+            copyText(text, 'Đã sao chép nội dung chuyển khoản!');
+        }
+
+        function handleSubmitDepositRequest(e) {
+            e.preventDefault();
+            const state = loadState();
+            const user = getCurrentUser(state);
+            if (!user) {
+                openAuthModal('login');
+                showToast('Vui lòng đăng nhập tài khoản trước khi gửi phiếu nạp!', 'info');
+                return;
+            }
+
+            const amount = parseInt(document.getElementById('deposit-amount-input').value, 10) || 0;
+            const ref = (document.getElementById('deposit-ref-input').value || '').trim();
+
+            if (amount < MIN_DEPOSIT_VND) {
+                showToast(`Số tiền nạp tối thiểu là ${MIN_DEPOSIT_VND.toLocaleString('vi-VN')}đ (5k)!`, 'error');
+                return;
+            }
+
+            const now = Date.now();
+            state.depositRequests.unshift({
+                id: `dep_${now}_${Math.random().toString(36).slice(2, 6)}`,
+                time: formatDateTime(now),
+                ts: now,
+                username: user.username,
+                role: user.role,
+                amount,
+                memo: `NAP ${user.username.toUpperCase()}${ref ? ' • ' + ref : ''}`,
+                status: 'PENDING'
+            });
+
+            saveState(state);
+            document.getElementById('deposit-ref-input').value = '';
+            if (isAdminAuthenticated) renderAdminDashboard();
+            showToast(`Đã gửi phiếu nạp ${formatVND(amount)}. Vui lòng chờ Admin xác nhận!`, 'success');
+        }
+
+        /* ======================================================================
+           BẢNG QUẢN TRỊ ADMIN (STRICT ZERO-EXPOSED-CREDENTIALS)
+           ====================================================================== */
+        function handleBrandTap() {
+            brandTapCount += 1;
+            clearTimeout(brandTapTimer);
+            if (brandTapCount >= 5) {
+                brandTapCount = 0;
+                openAdminModal();
+                return;
+            }
+            brandTapTimer = setTimeout(() => {
+                brandTapCount = 0;
+            }, 1500);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                openAdminModal();
+            }
+        });
+
+        function openAdminModal() {
+            const uInp = document.getElementById('admin-user-input');
+            const pInp = document.getElementById('admin-pass-input');
+            if (uInp) uInp.value = '';
+            if (pInp) {
+                pInp.value = '';
+                pInp.type = 'password';
+            }
+            const eye = document.getElementById('admin-pass-eye');
+            if (eye) eye.className = 'fa-regular fa-eye text-xs';
+
+            if (!isAdminAuthenticated) {
+                document.getElementById('admin-login-view').classList.remove('hidden');
+                document.getElementById('admin-dashboard-view').classList.add('hidden');
+            } else {
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-dashboard-view').classList.remove('hidden');
+                renderAdminDashboard();
+            }
+
+            const modal = document.getElementById('admin-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const rawUser = document.getElementById('admin-user-input').value.trim().toLowerCase();
+            const rawPass = document.getElementById('admin-pass-input').value.trim();
+
+            if (rawUser !== ADMIN_USER_CANONICAL || rawPass !== ADMIN_PASS_CANONICAL) {
+                showToast('Thông tin xác thực quản trị không chính xác.', 'error');
+                return;
+            }
+
+            document.getElementById('admin-user-input').value = '';
+            document.getElementById('admin-pass-input').value = '';
+            isAdminAuthenticated = true;
+
+            document.getElementById('admin-login-view').classList.add('hidden');
+            document.getElementById('admin-dashboard-view').classList.remove('hidden');
+            renderAdminDashboard();
+            showToast('Xác thực quản trị thành công!', 'success');
+        }
+
+        function logoutAdminSession() {
+            isAdminAuthenticated = false;
+            document.getElementById('admin-dashboard-view').classList.add('hidden');
+            document.getElementById('admin-login-view').classList.remove('hidden');
+            showToast('Đã khóa phiên quản trị.', 'info');
+        }
+
+        function switchAdminSubtab(subname) {
+            ['ctv', 'stock', 'audit', 'sync'].forEach(name => {
+                const panel = document.getElementById(`adm-subpanel-${name}`);
+                const btn = document.getElementById(`adm-subtab-btn-${name}`);
+                if (name === subname) {
+                    panel.classList.remove('hidden');
+                    btn.className = 'px-3.5 py-2 rounded-lg text-xs font-extrabold bg-amber-400 text-slate-950 cursor-pointer';
+                } else {
+                    panel.classList.add('hidden');
+                    btn.className = 'px-3.5 py-2 rounded-lg text-xs font-bold text-slate-300 hover:bg-white/5 cursor-pointer';
+                }
+            });
+            renderAdminDashboard();
+        }
+
+        function renderAdminDashboard() {
+            if (!isAdminAuthenticated) return;
+            renderAdminUserDropdowns();
+            renderAdminMembersTable();
+            renderAdminStockCards();
+            updateImportLineCount();
+            renderAdminDepositRequests();
+            renderAdminAuditLogs();
+            syncWorkerInputsFromStorage();
+        }
+
+        // Tạo tài khoản & mật khẩu CTV riêng (role = 'ctv')
+        function handleAdminCreateCtvAccount(e) {
+            e.preventDefault();
+            const uEl = document.getElementById('create-ctv-username');
+            const pEl = document.getElementById('create-ctv-password');
+            const bEl = document.getElementById('create-ctv-balance');
+
+            const username = uEl.value.trim().toLowerCase();
+            const password = pEl.value.trim();
+            const initBalance = Math.max(0, parseInt(bEl.value, 10) || 0);
+
+            if (!username || !password) {
+                showToast('Vui lòng nhập đầy đủ Tên tài khoản CTV và Mật khẩu CTV!', 'error');
+                return;
+            }
+            if (username === ADMIN_USER_CANONICAL) {
+                showToast('Tên tài khoản không hợp lệ!', 'error');
+                return;
+            }
+
+            const state = loadState();
+            if (state.users[username]) {
+                showToast(`Tài khoản "${username}" đã tồn tại trên hệ thống!`, 'error');
+                return;
+            }
+
+            const now = Date.now();
+            state.users[username] = {
+                username,
+                password,
+                role: 'ctv',
+                balance: initBalance,
+                totalSpent: 0,
+                totalDeposited: initBalance,
+                createdAt: formatDateTime(now),
+                keys: []
+            };
+
+            state.transactions.unshift({
+                id: `tx_ctv_${now}`,
+                time: formatDateTime(now),
+                ts: now,
+                username,
+                role: 'ctv',
+                type: 'CREATE_CTV',
+                delta: initBalance,
+                after: initBalance,
+                detail: `Admin tạo tài khoản CTV riêng${initBalance > 0 ? ' + nạp ' + formatVND(initBalance) : ''}`
+            });
+
+            saveState(state);
+            uEl.value = '';
+            pEl.value = '';
+            bEl.value = '0';
+
+            renderAll();
+            renderAdminDashboard();
+            showToast(`Đã tạo tài khoản CTV "@${username}" thành công!`, 'success');
+        }
+
+        function renderAdminUserDropdowns() {
+            const state = loadState();
+            const names = Object.keys(state.users);
+            const balSel = document.getElementById('adm-bal-user-select');
+            const pwSel = document.getElementById('adm-resetpw-user-select');
+
+            const html = names.length
+                ? names.map(u => {
+                    const user = state.users[u];
+                    const roleTag = user.role === 'ctv' ? '[CTV]' : '[Khách]';
+                    return `<option value="${escapeHtml(u)}">${roleTag} @${escapeHtml(u)} (${user.balance.toLocaleString('vi-VN')}đ)</option>`;
+                }).join('')
+                : `<option value="">Chưa có tài khoản</option>`;
+
+            if (balSel) {
+                const prev = balSel.value;
+                balSel.innerHTML = html;
+                if (prev && state.users[prev]) balSel.value = prev;
+            }
+            if (pwSel) {
+                const prev = pwSel.value;
+                pwSel.innerHTML = html;
+                if (prev && state.users[prev]) pwSel.value = prev;
+            }
+        }
+
+        function quickAdjustDelta(amount) {
+            const inp = document.getElementById('adm-bal-delta-input');
+            inp.value = (parseInt(inp.value, 10) || 0) + amount;
+        }
+
+        function handleAdminAdjustBalance(e) {
+            e.preventDefault();
+            const username = document.getElementById('adm-bal-user-select').value;
+            const delta = parseInt(document.getElementById('adm-bal-delta-input').value, 10);
+
+            if (!username) {
+                showToast('Vui lòng chọn tài khoản!', 'error');
+                return;
+            }
+            if (isNaN(delta) || delta === 0) {
+                showToast('Vui lòng nhập số tiền cộng/trừ khác 0!', 'error');
+                return;
+            }
+
+            const state = loadState();
+            const target = state.users[username];
+            if (!target) return;
+
+            const nextBal = target.balance + delta;
+            if (nextBal < 0) {
+                showToast(`Số dư sau trừ không thể âm (hiện có ${formatVND(target.balance)})!`, 'error');
+                return;
+            }
+
+            target.balance = nextBal;
+            if (delta > 0) target.totalDeposited += delta;
+
+            const now = Date.now();
+            state.transactions.unshift({
+                id: `tx_adj_${now}`,
+                time: formatDateTime(now),
+                ts: now,
+                username,
+                role: target.role,
+                type: delta > 0 ? 'ADMIN_TOPUP' : 'ADMIN_DEDUCT',
+                delta,
+                after: nextBal,
+                detail: delta > 0 ? 'Admin cộng số dư trực tiếp' : 'Admin trừ số dư trực tiếp'
+            });
+
+            saveState(state);
+            document.getElementById('adm-bal-delta-input').value = '';
+            renderAll();
+            renderAdminDashboard();
+            showToast(`Đã cập nhật số dư @${username} (${delta > 0 ? '+' : ''}${delta.toLocaleString('vi-VN')}đ)!`, 'success');
+        }
+
+        function handleAdminResetMemberPassword(e) {
+            e.preventDefault();
+            const username = document.getElementById('adm-resetpw-user-select').value;
+            const newPass = document.getElementById('adm-resetpw-new-input').value.trim();
+
+            if (!username || !newPass) {
+                showToast('Vui lòng chọn tài khoản và nhập mật khẩu mới!', 'error');
+                return;
+            }
+
+            const state = loadState();
+            const target = state.users[username];
+            if (!target) return;
+
+            target.password = newPass;
+            saveState(state);
+            document.getElementById('adm-resetpw-new-input').value = '';
+            showToast(`Đã đặt lại mật khẩu mới cho @${username}!`, 'success');
+        }
+
+        // Bảng thành viên & CTV: mật khẩu luôn được che (••••••••) để bảo mật
+        function renderAdminMembersTable() {
+            const state = loadState();
+            const roleFilter = document.getElementById('adm-member-role-filter')?.value || 'ALL';
+            const query = (document.getElementById('adm-member-search')?.value || '').trim().toLowerCase();
+            const tbody = document.getElementById('adm-members-tbody');
+
+            const users = Object.values(state.users).filter(u => {
+                const matchRole = roleFilter === 'ALL' || u.role === roleFilter;
+                const matchQ = !query || u.username.includes(query);
+                return matchRole && matchQ;
+            });
+
+            if (!users.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-5 text-center text-slate-400">Chưa có tài khoản nào phù hợp.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = users.map(u => {
+                const isCtv = u.role === 'ctv';
+                const badge = isCtv
+                    ? `<span class="px-2 py-0.5 rounded bg-amber-400 text-slate-950 font-extrabold text-[10px]">CTV (400đ)</span>`
+                    : `<span class="px-2 py-0.5 rounded bg-cyan-400/15 text-cyan-300 font-bold text-[10px]">Khách hàng</span>`;
+
+                return `
+                    <tr class="hover:bg-white/5">
+                        <td class="py-2.5 px-2 font-bold ${isCtv ? 'text-amber-300' : 'text-cyan-300'}">@${escapeHtml(u.username)}</td>
+                        <td class="py-2.5 px-2">${badge}</td>
+                        <td class="py-2.5 px-2 font-mono text-slate-400">••••••••</td>
+                        <td class="py-2.5 px-2 font-mono font-bold text-emerald-400">${formatVND(u.balance)}</td>
+                        <td class="py-2.5 px-2 font-mono text-slate-200">${(u.keys || []).length} key</td>
+                        <td class="py-2.5 px-2 text-right whitespace-nowrap space-x-1">
+                            <button type="button" onclick="toggleAccountRoleByAdmin('${escapeHtml(u.username)}')" class="px-2 py-1 rounded-lg bg-indigo-500/20 hover:bg-indigo-500 text-indigo-200 hover:text-white font-bold text-[11px] cursor-pointer">
+                                ${isCtv ? 'Hạ Khách' : 'Nâng CTV'}
+                            </button>
+                            <button type="button" onclick="deleteMemberAccount('${escapeHtml(u.username)}')" class="px-2 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white font-bold text-[11px] cursor-pointer">
+                                Xóa TK
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleAccountRoleByAdmin(username) {
+            const state = loadState();
+            const target = state.users[username];
+            if (!target) return;
+            target.role = target.role === 'ctv' ? 'customer' : 'ctv';
+            saveState(state);
+            renderAll();
+            renderAdminDashboard();
+            showToast(`Đã chuyển @${username} sang vai trò ${target.role === 'ctv' ? 'CTV (400đ/1h)' : 'Khách hàng'}!`, 'success');
+        }
+
+        function deleteMemberAccount(username) {
+            const state = loadState();
+            if (!state.users[username]) return;
+            delete state.users[username];
+            saveState(state);
+            if (getCurrentUser(state) === null && localStorage.getItem(STORAGE_KEYS.SESSION_USER) === username) {
+                setSessionUsername(null);
+            }
+            renderAll();
+            renderAdminDashboard();
+            showToast(`Đã xóa tài khoản @${username}.`, 'info');
+        }
+
+        /* ======================================================================
+           QUẢN LÝ KHO KEY THỦ CÔNG & ĐỐI CHIẾU SỐ LƯỢNG CHÍNH XÁC
+           ====================================================================== */
+        function renderAdminStockCards() {
+            const state = loadState();
+            const grid = document.getElementById('adm-stock-cards-grid');
+            grid.innerHTML = TIER_CATALOG.map(t => {
+                const count = (state.stock[t.id] || []).length;
+                return `
+                    <div class="p-3 rounded-xl bg-slate-900 border ${t.ctvOnly ? 'border-amber-400/40' : 'border-white/10'} space-y-1.5">
+                        <div class="text-xs font-extrabold ${t.ctvOnly ? 'text-amber-300' : 'text-white'}">${t.label}</div>
+                        <div class="font-mono text-[11px] text-cyan-300">${t.price.toLocaleString('vi-VN')}đ/key</div>
+                        <div class="font-mono text-xs font-bold ${count > 0 ? 'text-emerald-400' : 'text-rose-400'}">
+                            Tồn kho: ${count} key
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function parseKeyLines(text) {
+            if (!text) return [];
+            return String(text)
+                .split(/\r?\n/)
+                .map(line => line.trim())
+                .filter(Boolean);
+        }
+
+        function updateImportLineCount() {
+            const ta = document.getElementById('adm-import-keys-textarea');
+            const out = document.getElementById('adm-import-line-count');
+            if (!ta || !out) return;
+            const lines = parseKeyLines(ta.value);
+            out.textContent = `${lines.length} key`;
+        }
+
+        function handleAdminManualStockImport(e) {
+            e.preventDefault();
+            const tierId = document.getElementById('adm-import-tier-select').value;
+            const ta = document.getElementById('adm-import-keys-textarea');
+            const verifyMsg = document.getElementById('adm-import-verify-msg');
+
+            const rawLines = parseKeyLines(ta.value);
+            if (!rawLines.length) {
+                showToast('Vui lòng dán ít nhất 1 mã key thật (mỗi key 1 dòng)!', 'error');
+                return;
+            }
+
+            const state = loadState();
+            const allExisting = new Set([
+                ...state.usedKeys,
+                ...Object.values(state.stock).flat()
+            ]);
+
+            const uniqueNewKeys = [];
+            let duplicateSkipped = 0;
+
+            rawLines.forEach(code => {
+                if (allExisting.has(code)) {
+                    duplicateSkipped += 1;
+                } else {
+                    allExisting.add(code);
+                    uniqueNewKeys.push(code);
+                }
+            });
+
+            if (!uniqueNewKeys.length) {
+                showToast(`Toàn bộ ${duplicateSkipped} key vừa nhập đã tồn tại trong kho hoặc đã sử dụng!`, 'error');
+                return;
+            }
+
+            const stockBefore = (state.stock[tierId] || []).length;
+            state.stock[tierId] = [...(state.stock[tierId] || []), ...uniqueNewKeys];
+            const stockAfter = state.stock[tierId].length;
+            const addedCount = uniqueNewKeys.length;
+
+            // Đối chiếu nghiêm ngặt stockAfter - stockBefore === addedCount
+            if (stockAfter - stockBefore !== addedCount) {
+                showToast('Lỗi đối chiếu tồn kho sau khi nạp key!', 'error');
+                return;
+            }
+
+            saveState(state);
+            ta.value = '';
+            updateImportLineCount();
+            renderAll();
+            renderAdminDashboard();
+
+            const tierObj = TIER_CATALOG.find(t => t.id === tierId);
+            const msg = `Đã nạp ${addedCount} key vào ${tierObj ? tierObj.label : tierId} (${stockBefore} → ${stockAfter} key${duplicateSkipped ? `, bỏ qua ${duplicateSkipped} trùng` : ''}).`;
+            if (verifyMsg) verifyMsg.textContent = msg;
+            showToast(msg, 'success');
+        }
+
+        /* ======================================================================
+           KIỂM TRA TOÀN BỘ NẠP & GIAO DỊCH (ADMIN AUDIT)
+           ====================================================================== */
+        function renderAdminDepositRequests() {
+            const state = loadState();
+            const tbody = document.getElementById('adm-deposit-requests-tbody');
+            const summaryPill = document.getElementById('adm-deposits-summary-pill');
+
+            const approvedTotal = state.depositRequests
+                .filter(d => d.status === 'APPROVED')
+                .reduce((s, d) => s + Number(d.amount || 0), 0);
+
+            if (summaryPill) {
+                summaryPill.textContent = `Phiếu đã duyệt: ${formatVND(approvedTotal)}`;
+            }
+
+            if (!state.depositRequests.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-5 text-center text-slate-400">Chưa có phiếu nạp tiền nào.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = state.depositRequests.map(dep => {
+                const isPending = dep.status === 'PENDING';
+                const statusBadge = dep.status === 'APPROVED'
+                    ? `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">Đã duyệt</span>`
+                    : (dep.status === 'REJECTED'
+                        ? `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold text-[10px]">Từ chối</span>`
+                        : `<span class="px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 font-bold text-[10px]">Chờ duyệt</span>`);
+
+                const actions = isPending
+                    ? `
+                        <button type="button" onclick="approveDepositRequest('${escapeHtml(dep.id)}')" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-[11px] cursor-pointer">Duyệt +Tiền</button>
+                        <button type="button" onclick="rejectDepositRequest('${escapeHtml(dep.id)}')" class="px-2 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white font-bold text-[11px] cursor-pointer">Từ chối</button>
+                    `
+                    : `<span class="text-slate-500 text-[11px]">Đã xử lý</span>`;
+
+                return `
+                    <tr class="hover:bg-white/5">
+                        <td class="py-2 px-2 text-slate-400 whitespace-nowrap">${escapeHtml(dep.time)}</td>
+                        <td class="py-2 px-2 font-bold text-cyan-300">@${escapeHtml(dep.username)}</td>
+                        <td class="py-2 px-2 font-mono font-bold text-emerald-400 whitespace-nowrap">+${Number(dep.amount).toLocaleString('vi-VN')} đ</td>
+                        <td class="py-2 px-2 text-slate-200">${escapeHtml(dep.memo)}</td>
+                        <td class="py-2 px-2">${statusBadge}</td>
+                        <td class="py-2 px-2 text-right whitespace-nowrap space-x-1">${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function approveDepositRequest(depId) {
+            const state = loadState();
+            const req = state.depositRequests.find(d => d.id === depId);
+            if (!req || req.status !== 'PENDING') return;
+
+            const user = state.users[req.username];
+            if (!user) {
+                showToast('Tài khoản gửi phiếu nạp không còn tồn tại!', 'error');
+                return;
+            }
+
+            req.status = 'APPROVED';
+            user.balance += Number(req.amount || 0);
+            user.totalDeposited += Number(req.amount || 0);
+
+            const now = Date.now();
+            state.transactions.unshift({
+                id: `tx_dep_${now}`,
+                time: formatDateTime(now),
+                ts: now,
+                username: user.username,
+                role: user.role,
+                type: 'DEPOSIT_APPROVED',
+                delta: Number(req.amount || 0),
+                after: user.balance,
+                detail: `Duyệt phiếu nạp QR PHAN CHI VY (${req.memo})`
+            });
+
+            saveState(state);
+            renderAll();
+            renderAdminDashboard();
+            showToast(`Đã duyệt nạp +${formatVND(req.amount)} cho @${user.username}!`, 'success');
+        }
+
+        function rejectDepositRequest(depId) {
+            const state = loadState();
+            const req = state.depositRequests.find(d => d.id === depId);
+            if (!req || req.status !== 'PENDING') return;
+            req.status = 'REJECTED';
+            saveState(state);
+            renderAdminDashboard();
+            showToast('Đã từ chối phiếu nạp tiền.', 'info');
+        }
+
+        function renderAdminAuditLogs() {
+            const state = loadState();
+            const tbody = document.getElementById('adm-all-transactions-tbody');
+            const q = (document.getElementById('adm-audit-search')?.value || '').trim().toLowerCase();
+
+            const filtered = state.transactions.filter(t => {
+                if (!q) return true;
+                return (t.username || '').toLowerCase().includes(q) ||
+                    (t.detail || '').toLowerCase().includes(q) ||
+                    (t.type || '').toLowerCase().includes(q);
+            });
+
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-5 text-center text-slate-400">Chưa có giao dịch nào.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.slice(0, 80).map(tx => {
+                const delta = Number(tx.delta || 0);
+                const sign = delta > 0 ? '+' : '';
+                const deltaCls = delta > 0 ? 'text-emerald-400' : (delta < 0 ? 'text-rose-400' : 'text-slate-400');
+                return `
+                    <tr class="hover:bg-white/5">
+                        <td class="py-2 px-2 text-slate-400 whitespace-nowrap">${escapeHtml(tx.time)}</td>
+                        <td class="py-2 px-2 font-bold text-cyan-300">@${escapeHtml(tx.username)}</td>
+                        <td class="py-2 px-2 font-mono text-[11px] text-slate-300">${escapeHtml(tx.type)}</td>
+                        <td class="py-2 px-2 font-mono font-bold ${deltaCls} whitespace-nowrap">${sign}${delta.toLocaleString('vi-VN')} đ</td>
+                        <td class="py-2 px-2 text-slate-200">${escapeHtml(tx.detail)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /* ======================================================================
+           PERSISTENCE, BACKUP JSON & CLOUDFLARE WORKER KV SYNC
+           ====================================================================== */
+        function exportBackupJson() {
+            try {
+                const state = loadState();
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `vohoainam-backup-${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Đã xuất file sao lưu JSON!', 'success');
+            } catch (_) {
+                showToast('Không thể xuất file sao lưu.', 'error');
+            }
+        }
+
+        function importBackupJson(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const parsed = JSON.parse(String(reader.result || '{}'));
+                    const normalized = normalizeState(parsed);
+                    saveState(normalized);
+                    renderAll();
+                    renderAdminDashboard();
+                    showToast('Đã khôi phục dữ liệu từ file JSON!', 'success');
+                } catch (_) {
+                    showToast('File JSON không hợp lệ!', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function resetStockToZero() {
+            const state = loadState();
+            state.stock = { ctv1h: [], '1h': [], '1d': [], '7d': [], '30d': [] };
+            saveState(state);
+            renderAll();
+            renderAdminDashboard();
+            showToast('Đã đặt lại tồn kho toàn bộ các gói về 0 key!', 'info');
+        }
+
+        function getWorkerEndpoint() {
+            return String(localStorage.getItem(STORAGE_KEYS.WORKER_URL) || '').trim().replace(/\/+$/, '');
+        }
+
+        function isAutoSyncEnabled() {
+            return localStorage.getItem(STORAGE_KEYS.WORKER_AUTO) === '1';
+        }
+
+        function updateSyncBadges(text, tone = 'neutral') {
+            const hPill = document.getElementById('sync-status-pill');
+            const kBadge = document.getElementById('worker-kv-badge');
+            const map = {
+                neutral: 'bg-slate-800/90 text-cyan-300',
+                ok: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/35',
+                warn: 'bg-amber-400/20 text-amber-300 border border-amber-400/35',
+                err: 'bg-rose-500/20 text-rose-300 border border-rose-500/35'
+            };
+            const cls = map[tone] || map.neutral;
+            if (hPill) {
+                hPill.className = `px-1.5 py-0.2 rounded font-mono text-[9px] normal-case ${cls}`;
+                hPill.textContent = text;
+            }
+            if (kBadge) {
+                kBadge.className = `px-2.5 py-0.5 rounded-full font-mono text-[11px] ${cls}`;
+                kBadge.textContent = text;
+            }
+        }
+
+        function syncWorkerInputsFromStorage() {
+            const urlInp = document.getElementById('worker-endpoint-input');
+            const autoCb = document.getElementById('worker-auto-sync-checkbox');
+            const endpoint = getWorkerEndpoint();
+            if (urlInp) urlInp.value = endpoint;
+            if (autoCb) autoCb.checked = isAutoSyncEnabled();
+            updateSyncBadges(endpoint ? 'Worker KV sẵn sàng' : 'LocalStorage', endpoint ? 'warn' : 'neutral');
+        }
+
+        function saveWorkerEndpointConfig() {
+            const val = String(document.getElementById('worker-endpoint-input')?.value || '').trim().replace(/\/+$/, '');
+            if (val && !/^https?:\/\//i.test(val)) {
+                showToast('URL Worker phải bắt đầu bằng https:// hoặc http://', 'error');
+                return;
+            }
+            if (val) {
+                localStorage.setItem(STORAGE_KEYS.WORKER_URL, val);
+                updateSyncBadges('Đã lưu URL Worker', 'ok');
+                showToast('Đã lưu địa chỉ Cloudflare Worker!', 'success');
+            } else {
+                localStorage.removeItem(STORAGE_KEYS.WORKER_URL);
+                updateSyncBadges('LocalStorage', 'neutral');
+                showToast('Đã xóa URL Worker, dùng localStorage.', 'info');
+            }
+        }
+
+        function toggleAutoWorkerSync(checked) {
+            localStorage.setItem(STORAGE_KEYS.WORKER_AUTO, checked ? '1' : '0');
+            showToast(checked ? 'Đã bật tự động đồng bộ Worker KV.' : 'Đã tắt tự động đồng bộ.', 'info');
+        }
+
+        async function pushStateToWorker(notify = false) {
+            const endpoint = getWorkerEndpoint();
+            if (!endpoint) {
+                if (notify) showToast('Chưa cấu hình URL Worker — dữ liệu đang lưu trên localStorage.', 'info');
+                return false;
+            }
+            try {
+                const res = await fetch(`${endpoint}/api/state`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: loadState() })
+                });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok || !json.ok) throw new Error(json.error || `HTTP ${res.status}`);
+                updateSyncBadges('Đã đồng bộ KV', 'ok');
+                if (notify) showToast('Đã đồng bộ dữ liệu lên Cloudflare Worker KV!', 'success');
+                return true;
+            } catch (err) {
+                updateSyncBadges('Fallback LocalStorage', 'warn');
+                if (notify) showToast(`Đồng bộ KV thất bại (giữ bản localStorage): ${err.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function pullStateFromWorker(notify = false) {
+            const endpoint = getWorkerEndpoint();
+            if (!endpoint) {
+                if (notify) showToast('Chưa cấu hình URL Worker.', 'info');
+                return false;
+            }
+            try {
+                const res = await fetch(`${endpoint}/api/state`, { method: 'GET' });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok || !json.ok || !json.data) throw new Error(json.error || `HTTP ${res.status}`);
+                saveState(json.data, true);
+                updateSyncBadges('Đã tải từ KV', 'ok');
+                renderAll();
+                if (isAdminAuthenticated) renderAdminDashboard();
+                if (notify) showToast('Đã tải dữ liệu mới nhất từ Cloudflare Worker KV!', 'success');
+                return true;
+            } catch (err) {
+                updateSyncBadges('Fallback LocalStorage', 'warn');
+                if (notify) showToast(`Không tải được từ KV: ${err.message}`, 'error');
+                return false;
+            }
+        }
+
+        function scheduleWorkerSync() {
+            if (!isAutoSyncEnabled() || !getWorkerEndpoint()) return;
+            clearTimeout(workerSyncTimer);
+            workerSyncTimer = setTimeout(() => {
+                pushStateToWorker(false);
+            }, 600);
+        }
+
+        /* ======================================================================
+           TIỆN ÍCH TOAST & CLIPBOARD
+           ====================================================================== */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const styles = {
+                success: 'bg-slate-900/95 border-emerald-500/50 text-emerald-300',
+                error: 'bg-slate-900/95 border-rose-500/50 text-rose-300',
+                info: 'bg-slate-900/95 border-cyan-400/50 text-cyan-200'
+            };
+            const icons = {
+                success: 'fa-circle-check text-emerald-400',
+                error: 'fa-circle-exclamation text-rose-400',
+                info: 'fa-circle-info text-cyan-300'
+            };
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border backdrop-blur-md shadow-xl flex items-center gap-2.5 text-xs sm:text-sm font-medium transition-all ${styles[type] || styles.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} shrink-0"></i><span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 250);
+            }, 3500);
+        }
+
+        function copyText(text, successMsg) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast(successMsg || 'Đã sao chép!', 'success');
+            } catch (_) {
+                showToast('Không thể sao chép tự động.', 'error');
+            }
+        }
+
+        window.onload = function () {
+            initThreeScene();
+            syncWorkerInputsFromStorage();
+            renderAll();
+            if (getWorkerEndpoint() && isAutoSyncEnabled()) {
+                pullStateFromWorker(false);
+            }
+        };
+    </script>
+</body>
+</html>
